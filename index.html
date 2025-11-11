@@ -49,8 +49,18 @@
     /* 三段分層 sticky */
     .subbar{position: sticky; z-index: 1020; background: #fff;}
     .subbar-1{top: var(--navH,56px);}
-    .subbar-2{top: calc(var(--navH,56px) + var(--bar1H,48px));}
-    .subbar-3{position: sticky; top: calc(var(--navH,56px) + var(--bar1H,48px) + var(--bar2H,40px)); z-index: 1015; background:#fff; border-bottom:1px solid #e9ecef;}
+    .subbar-2 {
+      border-bottom: none !important; /* 取消第二層下邊框 */
+      margin-bottom: 0 !important;    /* 移除底部間距 */
+      padding-bottom: 0 !important;
+    }
+    
+    .subbar-3 {
+      margin-top: 0 !important;       /* 確保緊貼 */
+      padding-top: 0.25rem !important;
+      border-top: none !important;    /* 不重疊邊界線 */
+    }
+
   </style>
 </head>
 <body>
