@@ -52,13 +52,21 @@
     .pop-zoom{animation:pop .4s ease;}
     @keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:scale(1);opacity:1}}
 
-    /* Sticky bars（維持不被滾動） */
+    /* 仍保留 Navbar 為最上層 sticky */
     .navbar.sticky-top { position: sticky; top: 0; z-index: 1030; }
-
-    .subbar{position: sticky; z-index: 1020; background: #fff;}
-    .subbar-1{top: var(--navH,56px);}
-    .subbar-2{top: calc(var(--navH,56px) + var(--bar1H,48px));}
-    .subbar-3{top: calc(var(--navH,56px) + var(--bar1H,48px) + var(--bar2H,40px)); z-index: 1015; background:#fff;}
+    
+    /* 第一層：進度列 */
+    .subbar-1{ position: sticky; top: var(--navH,56px); z-index: 1020; background:#fff; border-bottom:1px solid #e9ecef; }
+    
+    /* 第二層（新）：徽章(可收合) + 分類（同一層） */
+    .sticky-stack{
+      position: sticky;
+      top: calc(var(--navH,56px) + var(--bar1H,48px)); /* 緊貼第一層底下 */
+      z-index: 1015;
+      background:#fff;
+      border-bottom:1px solid #e9ecef;
+      overflow: hidden;              /* 關鍵：避免 collapse 高度動畫時露出底層畫面 */
+    }
 
     /* 統一邊線：用相鄰選擇器把 1px 重疊，消除「縫隙」 */
     .subbar { border-bottom:1px solid #e9ecef; }
@@ -129,17 +137,13 @@
     </div>
   </div>
 
-  <!-- 徽章列（Sticky 第二層、預設收合） -->
-  <div class="subbar subbar-2 bg-white">
+  <!-- 徽章 + 分類（同一層 Sticky 第二層） -->
+  <div class="sticky-stack">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
         <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
       </div>
     </div>
-  </div>
-
-  <!-- 分類篩選（Sticky 第三層） -->
-  <div class="subbar subbar-3 bg-white">
     <div class="container py-2">
       <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
     </div>
