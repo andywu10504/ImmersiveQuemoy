@@ -398,8 +398,33 @@ function wireEvents(){
 
   $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
 
+  // 收合/展開按鈕的文案與 icon 同步
+  setupBadgeToggleButton();
+
   // sticky 高度校正（收展徽章列時保持順暢）
   setupStickyWatch();
+}
+
+/* ===== 收合按鈕狀態同步 ===== */
+function setupBadgeToggleButton(){
+  const $btn = $("#btnToggleBadges");
+  const el = document.getElementById("badgeCollapse");
+
+  // 預設為「展開徽章」
+  setBadgeToggleUI(false);
+
+  el.addEventListener("show.bs.collapse", ()=> setBadgeToggleUI(true));
+  el.addEventListener("hide.bs.collapse", ()=> setBadgeToggleUI(false));
+
+  function setBadgeToggleUI(expanded){
+    if(expanded){
+      $btn.html('<i class="fa-solid fa-chevron-up me-1"></i> 收合徽章');
+      $btn.attr('aria-expanded','true');
+    }else{
+      $btn.html('<i class="fa-solid fa-chevron-down me-1"></i> 展開徽章');
+      $btn.attr('aria-expanded','false');
+    }
+  }
 }
 
 /* ===== 全部徽章 Modal 內容 ===== */
