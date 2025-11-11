@@ -1,210 +1,206 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>金門回聲｜沉浸・集章・巡禮</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>金門回聲｜沉浸・集章・巡禮</title>
 
-<!-- Bootstrap 5.3.8 -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap 5.3.8 + Font Awesome 7 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
 
-<!-- Font Awesome 7 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <!-- Leaflet -->
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Leaflet (OSM 地圖) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- jQuery + Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffffff">
-<link rel="icon" href="icons/icon-192.png">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="icon-192.png">
 
-<style>
-  body{background:#f7f7f9;}
-  #map{height:48vh;border-radius:8px;border:1px solid #dee2e6;}
-  .tag{display:inline-block;padding:.2rem .5rem;border:1px solid #adb5bd;border-radius:999px;font-size:.8rem;margin-right:.25rem;color:#495057;background:#fff;}
-  .filter-pill{cursor:pointer}
-  .filter-pill.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
-  .list-empty{padding:3rem 1rem;color:#868e96;text-align:center}
+  <style>
+    body{background:#f7f7f9;}
+    #map{height:48vh;border-radius:8px;border:1px solid #dee2e6;}
+    @media (min-width:1200px){ #map{height:56vh;} }
 
-  .card.collected{
-    border-color:#20c997; box-shadow:0 0 0 .2rem rgba(32,201,151,.15);
-  }
-  .stamp{
-    position:absolute; right:.5rem; bottom:.5rem; width:78px; height:78px;
-    border:4px solid #d6336c; color:#d6336c; border-radius:50%;
-    display:flex; align-items:center; justify-content:center; font-weight:800;
-    letter-spacing:.15em; font-size:.9rem; transform: rotate(-12deg) scale(0);
-    opacity:0; background: rgba(214,51,108,.06); pointer-events:none;
-  }
-  .card.collected .stamp{ transform: rotate(-12deg) scale(1); opacity:.92; transition: transform .25s ease, opacity .25s ease; }
-  @keyframes stampIn { 0%{ transform: rotate(-12deg) scale(.1); opacity:.0; } 60%{ transform: rotate(-12deg) scale(1.15); opacity:1; } 100%{ transform: rotate(-12deg) scale(1); opacity:.92; } }
-  .stamp.punch{ animation: stampIn .38s cubic-bezier(.2,1,.2,1); }
+    .tag{display:inline-block;padding:.2rem .5rem;border:1px solid #adb5bd;border-radius:999px;font-size:.8rem;margin-right:.25rem;color:#495057;background:#fff;}
+    .filter-pill{cursor:pointer}
+    .filter-pill.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
+    .list-empty{padding:3rem 1rem;color:#868e96;text-align:center}
 
-  .badge-chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .6rem; border-radius:999px; font-weight:600; border:1px solid #dee2e6; background:#fff; color:#495057; }
-  .badge-strong{background:#198754; color:#fff; border-color:#198754;}
-  .badge-muted {background:#f1f3f5; color:#6c757d;}
-  .pop-zoom { animation:pop .4s ease; }
-  @keyframes pop { from{transform:scale(.6); opacity:.2} to{transform:scale(1); opacity:1} }
-  @media (min-width:1200px){ #map{height:56vh;} }
+    .card.collected{border-color:#20c997;box-shadow:0 0 0 .2rem rgba(32,201,151,.15);}
+    .stamp{position:absolute;right:.5rem;bottom:.5rem;width:78px;height:78px;border:4px solid #d6336c;color:#d6336c;border-radius:50%;
+           display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.15em;font-size:.9rem;
+           transform: rotate(-12deg) scale(0);opacity:0;background: rgba(214,51,108,.06);pointer-events:none;}
+    .card.collected .stamp{transform: rotate(-12deg) scale(1);opacity:.92;transition: transform .25s ease, opacity .25s ease;}
+    @keyframes stampIn {0%{transform: rotate(-12deg) scale(.1);opacity:.0;}60%{transform: rotate(-12deg) scale(1.15);opacity:1;}100%{transform: rotate(-12deg) scale(1);opacity:.92;}}
+    .stamp.punch{animation: stampIn .38s cubic-bezier(.2,1,.2,1);}
 
-  /* 三段 sticky 區 */
-  .subbar { position: sticky; z-index: 1020; background: #fff; }
-  .subbar-1 { top: var(--navH, 56px); }
-  .subbar-2 { top: calc(var(--navH, 56px) + var(--bar1H, 48px)); }
-  .subbar-3 {
-    position: sticky;
-    top: calc(var(--navH, 56px) + var(--bar1H, 48px) + var(--bar2H, 40px));
-    z-index: 1015; background: #fff; border-bottom: 1px solid #e9ecef;
-  }
-</style>
+    .badge-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:999px;font-weight:600;border:1px solid #dee2e6;background:#fff;color:#495057;}
+    .badge-strong{background:#198754;color:#fff;border-color:#198754;}
+    .badge-muted{background:#f1f3f5;color:#6c757d;}
+    .pop-zoom{animation:pop .4s ease;}
+    @keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:scale(1);opacity:1}}
+
+    /* 三段分層 sticky */
+    .subbar{position: sticky; z-index: 1020; background: #fff;}
+    .subbar-1{top: var(--navH,56px);}
+    .subbar-2{top: calc(var(--navH,56px) + var(--bar1H,48px));}
+    .subbar-3{position: sticky; top: calc(var(--navH,56px) + var(--bar1H,48px) + var(--bar2H,40px)); z-index: 1015; background:#fff; border-bottom:1px solid #e9ecef;}
+  </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top" id="topNav">
-  <div class="container-fluid px-3">
-    <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-person-hiking me-2"></i>金門回聲｜沉浸・集章・巡禮</a>
+  <!-- Navbar（手機時搜尋滿版、重設在下方） -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top" id="topNav">
+    <div class="container-fluid px-3">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="fa-solid fa-person-hiking me-2"></i>金門回聲｜沉浸・集章・巡禮
+      </a>
 
-    <!-- 三條線按鈕 -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="切換導覽">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="切換導覽">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <!-- 展開內容 -->
-    <div id="navContent" class="collapse navbar-collapse justify-content-end mt-2 mt-lg-0">
-      <div class="w-100 w-lg-auto d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
-        <!-- 手機滿版搜尋 -->
-        <div class="input-group flex-grow-1">
-          <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input id="kw" type="search" class="form-control" placeholder="搜尋名稱、關鍵字…">
+      <div id="navContent" class="collapse navbar-collapse justify-content-end mt-2 mt-lg-0">
+        <div class="w-100 w-lg-auto d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
+          <div class="input-group flex-grow-1">
+            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input id="kw" type="search" class="form-control" placeholder="搜尋名稱、關鍵字…">
+          </div>
+          <div class="d-grid d-lg-block">
+            <button id="btnReset" class="btn btn-outline-secondary text-nowrap w-100 w-lg-auto mt-2 mt-lg-0">
+              <i class="fa-solid fa-rotate-left"></i> 重設
+            </button>
+          </div>
         </div>
-        <!-- 重設鈕 -->
-        <div class="d-grid d-lg-block">
-          <button id="btnReset" class="btn btn-outline-secondary text-nowrap w-100 w-lg-auto mt-2 mt-lg-0">
-            <i class="fa-solid fa-rotate-left"></i> 重設
+      </div>
+    </div>
+  </nav>
+
+  <!-- 進度列 -->
+  <div class="py-2 bg-light border-bottom subbar subbar-1">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <div class="small text-muted">進度：<span id="progressText">0 / 0</span></div>
+        <div class="d-flex align-items-center gap-2">
+          <button id="btnAllBadges" class="btn btn-sm btn-outline-primary">
+            <i class="fa-solid fa-award me-1"></i>查看全部徽章
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#badgeCollapse" aria-expanded="true" aria-controls="badgeCollapse">
+            <i class="fa-solid fa-chevron-up me-1"></i> 收合徽章
           </button>
         </div>
       </div>
-    </div>
-  </div>
-</nav>
-
-<!-- 進度列 -->
-<div class="py-2 bg-light border-bottom subbar subbar-1">
-  <div class="container">
-    <div class="d-flex align-items-center justify-content-between mb-1">
-      <div class="small text-muted">進度：<span id="progressText">0 / 0</span></div>
-      <div class="d-flex align-items-center gap-2">
-        <button id="btnAllBadges" class="btn btn-sm btn-outline-primary">
-          <i class="fa-solid fa-award me-1"></i>查看全部徽章
-        </button>
-        <!-- 收合徽章列 -->
-        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#badgeCollapse" aria-expanded="true" aria-controls="badgeCollapse">
-          <i class="fa-solid fa-chevron-up me-1"></i> 收合徽章
-        </button>
+      <div class="progress" role="progressbar" aria-label="collection progress">
+        <div id="progressBar" class="progress-bar" style="width:0%">0%</div>
       </div>
     </div>
-    <div class="progress" role="progressbar" aria-label="collection progress">
-      <div id="progressBar" class="progress-bar" style="width:0%">0%</div>
+  </div>
+
+  <!-- 徽章列（可收合） -->
+  <div class="subbar subbar-2 bg-white border-bottom">
+    <div id="badgeCollapse" class="collapse show">
+      <div class="container py-2">
+        <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 徽章列（可收合） -->
-<div class="subbar subbar-2 bg-white border-bottom">
-  <div id="badgeCollapse" class="collapse show">
+  <!-- 分類篩選 -->
+  <div class="subbar subbar-3 bg-white border-bottom">
     <div class="container py-2">
-      <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
+      <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
     </div>
   </div>
-</div>
 
-<!-- 分類篩選 -->
-<div class="subbar subbar-3 bg-white border-bottom">
-  <div class="container py-2">
-    <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
+  <!-- 主內容 -->
+  <div class="container my-3">
+    <div id="map" class="mb-3"></div>
+
+    <div id="list" class="row g-3"></div>
+    <div id="empty" class="list-empty d-none">
+      <i class="fa-regular fa-face-meh"></i> 沒有符合條件的項目。
+    </div>
   </div>
-</div>
 
-<!-- 主要內容 -->
-<div class="container my-3">
-  <div id="map" class="mb-3"></div>
-  <div id="list" class="row g-3"></div>
-  <div id="empty" class="list-empty d-none"><i class="fa-regular fa-face-meh"></i> 沒有符合條件的項目。</div>
-</div>
-
-<!-- 詳情 Modal -->
-<div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 id="mdTitle" class="modal-title"></h5>
-        <button class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
-      </div>
-      <div class="modal-body">
-        <div id="mdTags" class="mb-2"></div>
-        <p id="mdDesc" class="mb-3"></p>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="card"><div class="card-body">
-              <div class="small text-muted mb-1">地點</div>
-              <div id="mdAddr" class="fw-medium"></div>
-              <div class="text-muted small">座標：<span id="mdCoord"></span></div>
-              <a id="mdNav" href="#" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">
-                <i class="fa-solid fa-location-arrow"></i> 用地圖導航
-              </a>
-            </div></div>
-          </div>
-          <div class="col-md-6">
-            <div class="card h-100"><div class="card-body">
-              <div class="small text-muted mb-1">小挑戰（任務）</div>
-              <ul id="mdQuests" class="mb-0"></ul>
-            </div></div>
+  <!-- 詳情 Modal -->
+  <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="mdTitle" class="modal-title"></h5>
+          <button class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <div id="mdTags" class="mb-2"></div>
+          <p id="mdDesc" class="mb-3"></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <div class="small text-muted mb-1">地點</div>
+                  <div id="mdAddr" class="fw-medium"></div>
+                  <div class="text-muted small">座標：<span id="mdCoord"></span></div>
+                  <a id="mdNav" href="#" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">
+                    <i class="fa-solid fa-location-arrow"></i> 用地圖導航
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="small text-muted mb-1">小挑戰（任務）</div>
+                  <ul id="mdQuests" class="mb-0"></ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button id="mdCollectBtn" class="btn btn-success"><i class="fa-solid fa-stamp"></i> 蒐集 / 取消蒐集</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 解鎖提示 -->
-<div class="modal fade" id="badgeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-4 pop-zoom">
-      <div class="display-3 mb-3" id="badgeIcon"><i class="fa-solid fa-certificate"></i></div>
-      <h5 id="badgeTitle" class="mb-2">解鎖徽章！</h5>
-      <p id="badgeDesc" class="text-muted mb-0"></p>
-      <div class="mt-3"><button class="btn btn-success" data-bs-dismiss="modal"><i class="fa-solid fa-check"></i> 太棒了！</button></div>
-    </div>
-  </div>
-</div>
-
-<!-- 全部徽章 -->
-<div class="modal fade" id="allBadgesModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="fa-solid fa-award me-2"></i>全部徽章一覽</h5>
-        <button class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
-      </div>
-      <div class="modal-body">
-        <h6 class="text-muted mb-2">全域徽章</h6>
-        <div id="allBadgeGlobal" class="d-flex flex-wrap gap-2 mb-3"></div>
-        <h6 class="text-muted mb-2">分類徽章門檻</h6>
-        <div id="allBadgeCats"></div>
+        <div class="modal-footer justify-content-between">
+          <button id="mdCollectBtn" class="btn btn-success"><i class="fa-solid fa-stamp"></i> 蒐集 / 取消蒐集</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- 依序載入：jQuery / Bootstrap / Leaflet / App / PWA -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js"></script>
-<script src="pwa.js"></script>
+  <!-- 解鎖徽章 Modal -->
+  <div class="modal fade" id="badgeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4 pop-zoom">
+        <div class="display-3 mb-3" id="badgeIcon"><i class="fa-solid fa-certificate"></i></div>
+        <h5 id="badgeTitle" class="mb-2">解鎖徽章！</h5>
+        <p id="badgeDesc" class="text-muted mb-0"></p>
+        <div class="mt-3"><button class="btn btn-success" data-bs-dismiss="modal"><i class="fa-solid fa-check"></i> 太棒了！</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全部徽章 Modal -->
+  <div class="modal fade" id="allBadgesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fa-solid fa-award me-2"></i>全部徽章一覽</h5>
+          <button class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <h6 class="text-muted mb-2">全域徽章</h6>
+          <div id="allBadgeGlobal" class="d-flex flex-wrap gap-2 mb-3"></div>
+          <h6 class="text-muted mb-2">分類徽章門檻</h6>
+          <div id="allBadgeCats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App JS + PWA -->
+  <script src="app.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>
