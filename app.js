@@ -25,7 +25,7 @@ const BADGE_RULES = [
 const CAT_BADGE_RULES = {
    "在地文化":[{count:2,name:"在地文化入門",icon:"fa-solid fa-book-open"},{count:4,name:"在地文化巡禮",icon:"fa-solid fa-chess-rook"}],
    "戰地坑道":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
-   "防禦工事":[{count:2, name:"防禦入門", icon:"fa-solid fa-shield-halved"},  {count:4, name:"防禦巡禮", icon:"fa-solid fa-fort-awesome"}]
+   "防禦工事":[{count:2, name:"防禦入門", icon:"fa-solid fa-shield-halved"},  {count:4, name:"防禦巡禮", icon:"fa-solid fa-fort-awesome"}],
    "營區":[{count:1, name:"營區初探", icon:"fa-solid fa-tent"},  {count:3, name:"營區達人", icon:"fa-solid fa-helmet-safety"}],
    "金門日常":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
    "洋樓建築":[{count:1,name:"洋樓入門",icon:"fa-solid fa-building-columns"},{count:2,name:"洋樓達人",icon:"fa-solid fa-landmark"}],
