@@ -1,6 +1,6 @@
 /* ========= 資料載入 ========= */
 async function loadCatalog() {
-  const res = await fetch('data/catalog.json', { cache: 'no-cache' });
+  const res = await fetch('catalog.json', { cache: 'no-cache' });
   if (!res.ok) throw new Error('載入 catalog.json 失敗');
   return await res.json();
 }
