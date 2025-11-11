@@ -23,12 +23,6 @@
   <link rel="icon" href="icon-192.png">
 
   <style>
-    :root{
-      /* 會用 JS 量測覆寫 */
-      --navH: 56px;
-      --catH: 48px; /* subbar-3 高度，用於 spacer */
-    }
-
     body{background:#f7f7f9;}
     #map{height:48vh;border-radius:8px;border:1px solid #dee2e6;}
     @media (min-width:1200px){ #map{height:56vh;} }
@@ -52,32 +46,16 @@
     .pop-zoom{animation:pop .4s ease;}
     @keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:scale(1);opacity:1}}
 
-    /* ---------- 頂部結構 ---------- */
-    .subbar{background:#fff;}
-    .subbar-1{position: sticky; top: var(--navH); z-index: 1020;}
-
-    /* 徽章列：允許被滾走，並且取消底線避免與 subbar-3 產生雙線/縫隙 */
-    .subbar-2{position: sticky; top: calc(var(--navH) + 0px); z-index: 1018; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;}
-
-    /* 分類篩選列：固定於導覽列下方（不隨滾動） */
-    .subbar-3{
-      position: fixed;
-      top: var(--navH);
-      left: 0; right: 0;
-      z-index: 1030;
-      border-top: none !important;
-      border-bottom: 1px solid #e9ecef; /* 單一道線視覺 */
-    }
-    /* 內容頂端預留空間，避免 subbar-3 蓋住下方內容 */
-    #catSpacer{ height: var(--catH); }
-
-    /* 視覺細節：讓 subbar-2 與 subbar-3 緊貼無縫 */
-    .subbar-2 + .subbar-3{ margin-top: 0 !important; }
+    /* 三段分層 sticky */
+    .subbar{position: sticky; z-index: 1020; background: #fff;}
+    .subbar-1{top: var(--navH,56px);}
+    .subbar-2{top: calc(var(--navH,56px) + var(--bar1H,48px));}
+    .subbar-3{position: sticky; top: calc(var(--navH,56px) + var(--bar1H,48px) + var(--bar2H,40px)); z-index: 1015; background:#fff; border-bottom:1px solid #e9ecef;}
   </style>
 </head>
 <body>
 
-  <!-- Navbar（固定在最上層） -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top" id="topNav">
     <div class="container-fluid px-3">
       <a class="navbar-brand fw-bold" href="#">
@@ -104,7 +82,7 @@
     </div>
   </nav>
 
-  <!-- 進度列（可滾動，sticky 到 navbar 下） -->
+  <!-- 進度列 -->
   <div class="py-2 bg-light border-bottom subbar subbar-1">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between mb-1">
@@ -119,7 +97,7 @@
             <i class="fa-solid fa-plus"></i> 新增到主畫面
           </button>
 
-          <!-- 徽章列收合按鈕（文案/圖示自動同步） -->
+          <!-- 這顆按鈕直接綁 Bootstrap Collapse -->
           <button id="btnToggleBadges"
                   class="btn btn-sm btn-outline-secondary"
                   data-bs-toggle="collapse"
@@ -136,8 +114,8 @@
     </div>
   </div>
 
-  <!-- 徽章列（預設收合，且允許被滾走） -->
-  <div class="subbar subbar-2 bg-white">
+  <!-- 徽章列（預設收合：無 show） -->
+  <div class="subbar subbar-2 bg-white border-bottom">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
         <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
@@ -145,15 +123,12 @@
     </div>
   </div>
 
-  <!-- 分類篩選（固定，不隨滾動） -->
-  <div class="subbar subbar-3 bg-white">
+  <!-- 分類篩選 -->
+  <div class="subbar subbar-3 bg-white border-bottom">
     <div class="container py-2">
       <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
     </div>
   </div>
-
-  <!-- 固定列的佔位（避免覆蓋內容） -->
-  <div id="catSpacer" class="bg-transparent"></div>
 
   <!-- 主內容 -->
   <div class="container my-3">
@@ -238,61 +213,6 @@
 
   <!-- App JS + PWA -->
   <script src="app.js"></script>
-  <script>
-    // ---------- 量測高度 & 佔位 ----------
-    function measureHeights(){
-      const nav  = document.getElementById('topNav');
-      const cat  = document.querySelector('.subbar-3');
-      const navH = nav ? nav.getBoundingClientRect().height : 56;
-      const catH = cat ? cat.getBoundingClientRect().height : 48;
-
-      document.documentElement.style.setProperty('--navH', navH + 'px');
-      document.documentElement.style.setProperty('--catH', catH + 'px');
-    }
-    window.addEventListener('load', measureHeights);
-    window.addEventListener('resize', () => { clearTimeout(window.__hT); window.__hT = setTimeout(measureHeights, 100); });
-
-    // ---------- 徽章列收合按鈕文案/圖示同步 ----------
-    (function bindBadgeToggle(){
-      const btn = document.getElementById('btnToggleBadges');
-      const target = document.getElementById('badgeCollapse');
-      if(!btn || !target) return;
-
-      const setUI = (expanded) => {
-        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        btn.innerHTML = expanded
-          ? '<i class="fa-solid fa-chevron-up me-1"></i> 收合徽章'
-          : '<i class="fa-solid fa-chevron-down me-1"></i> 展開徽章';
-      };
-
-      target.addEventListener('show.bs.collapse', () => setUI(true));
-      target.addEventListener('hide.bs.collapse', () => setUI(false));
-      // 初始化：預設收合
-      setUI(false);
-    })();
-
-    // ---------- A2HS：新增到主畫面 ----------
-    (function setupA2HS(){
-      let deferredPrompt = null;
-      const btn = document.getElementById('btnA2HS');
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        btn.classList.remove('d-none');
-      });
-      btn?.addEventListener('click', async () => {
-        if(!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        btn.classList.add('d-none');
-      });
-      window.addEventListener('appinstalled', () => {
-        deferredPrompt = null;
-        btn?.classList.add('d-none');
-      });
-    })();
-  </script>
   <script src="pwa.js"></script>
 </body>
 </html>
