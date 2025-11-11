@@ -23,15 +23,20 @@
   <link rel="icon" href="icon-192.png">
 
   <style>
+    html, body { height: 100%; }
     body{background:#f7f7f9;}
+
+    /* Map */
     #map{height:48vh;border-radius:8px;border:1px solid #dee2e6;}
     @media (min-width:1200px){ #map{height:56vh;} }
 
+    /* Tags / chips */
     .tag{display:inline-block;padding:.2rem .5rem;border:1px solid #adb5bd;border-radius:999px;font-size:.8rem;margin-right:.25rem;color:#495057;background:#fff;}
     .filter-pill{cursor:pointer}
     .filter-pill.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
     .list-empty{padding:3rem 1rem;color:#868e96;text-align:center}
 
+    /* Card collected stamp */
     .card.collected{border-color:#20c997;box-shadow:0 0 0 .2rem rgba(32,201,151,.15);}
     .stamp{position:absolute;right:.5rem;bottom:.5rem;width:78px;height:78px;border:4px solid #d6336c;color:#d6336c;border-radius:50%;
            display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.15em;font-size:.9rem;
@@ -40,22 +45,32 @@
     @keyframes stampIn {0%{transform: rotate(-12deg) scale(.1);opacity:.0;}60%{transform: rotate(-12deg) scale(1.15);opacity:1;}100%{transform: rotate(-12deg) scale(1);opacity:.92;}}
     .stamp.punch{animation: stampIn .38s cubic-bezier(.2,1,.2,1);}
 
+    /* Badge chips */
     .badge-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:999px;font-weight:600;border:1px solid #dee2e6;background:#fff;color:#495057;}
     .badge-strong{background:#198754;color:#fff;border-color:#198754;}
     .badge-muted{background:#f1f3f5;color:#6c757d;}
     .pop-zoom{animation:pop .4s ease;}
     @keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:scale(1);opacity:1}}
 
-    /* 三段分層 sticky */
+    /* Sticky bars（維持不被滾動） */
+    .navbar.sticky-top { position: sticky; top: 0; z-index: 1030; }
+
     .subbar{position: sticky; z-index: 1020; background: #fff;}
     .subbar-1{top: var(--navH,56px);}
     .subbar-2{top: calc(var(--navH,56px) + var(--bar1H,48px));}
-    .subbar-3{position: sticky; top: calc(var(--navH,56px) + var(--bar1H,48px) + var(--bar2H,40px)); z-index: 1015; background:#fff; border-bottom:1px solid #e9ecef;}
+    .subbar-3{top: calc(var(--navH,56px) + var(--bar1H,48px) + var(--bar2H,40px)); z-index: 1015; background:#fff;}
+
+    /* 統一邊線：用相鄰選擇器把 1px 重疊，消除「縫隙」 */
+    .subbar { border-bottom:1px solid #e9ecef; }
+    .subbar + .subbar { margin-top:-1px; } /* 關鍵：把相鄰兩條底線重疊 → 看起來無縫 */
+
+    /* Sticky 需要父層不能 overflow hidden/auto，預設 body 無此問題；此處保險處理主要容器 */
+    .container, .container-fluid { overflow: visible; }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- Navbar（固定不滾動） -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top" id="topNav">
     <div class="container-fluid px-3">
       <a class="navbar-brand fw-bold" href="#">
@@ -82,8 +97,8 @@
     </div>
   </nav>
 
-  <!-- 進度列 -->
-  <div class="py-2 bg-light border-bottom subbar subbar-1">
+  <!-- 進度列（Sticky 第一層） -->
+  <div class="py-2 bg-light subbar subbar-1">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between mb-1">
         <div class="small text-muted">進度：<span id="progressText">0 / 0</span></div>
@@ -92,7 +107,7 @@
             <i class="fa-solid fa-award me-1"></i>查看全部徽章
           </button>
 
-          <!-- A2HS：可安裝才會顯示 -->
+          <!-- A2HS：可安裝才會顯示（Android 原生 / iOS 教學同一顆按鈕） -->
           <button id="btnA2HS" class="btn btn-sm btn-success d-none">
             <i class="fa-solid fa-plus"></i> 新增到主畫面
           </button>
@@ -114,8 +129,8 @@
     </div>
   </div>
 
-  <!-- 徽章列（預設收合：無 show） -->
-  <div class="subbar subbar-2 bg-white border-bottom">
+  <!-- 徽章列（Sticky 第二層、預設收合） -->
+  <div class="subbar subbar-2 bg-white">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
         <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
@@ -123,8 +138,8 @@
     </div>
   </div>
 
-  <!-- 分類篩選 -->
-  <div class="subbar subbar-3 bg-white border-bottom">
+  <!-- 分類篩選（Sticky 第三層） -->
+  <div class="subbar subbar-3 bg-white">
     <div class="container py-2">
       <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
     </div>
@@ -206,6 +221,26 @@
           <div id="allBadgeGlobal" class="d-flex flex-wrap gap-2 mb-3"></div>
           <h6 class="text-muted mb-2">分類徽章門檻</h6>
           <div id="allBadgeCats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- iOS 加到主畫面教學 Modal -->
+  <div class="modal fade" id="iosA2HSModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fa-solid fa-plus me-2"></i>新增到主畫面</h5>
+          <button class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <ol class="mb-0">
+            <li>使用 Safari 開啟本頁（iPhone / iPad）。</li>
+            <li>點右下角的 <strong>分享</strong> 按鈕。</li>
+            <li>選擇 <strong>加入主畫面</strong>，再點 <strong>加入</strong>。</li>
+          </ol>
+          <div class="small text-muted mt-2">提示：若已安裝或以獨立視窗開啟，按鈕會自動隱藏。</div>
         </div>
       </div>
     </div>
