@@ -524,24 +524,8 @@ function setupStickyWatch(){
   document.addEventListener('hide.bs.collapse', startSmooth);
   document.addEventListener('shown.bs.collapse', () => { stopSmooth(); setStickyVars(); });
   document.addEventListener('hidden.bs.collapse', () => { stopSmooth(); setStickyVars(); });
-   
-  // 初始 & 視窗改變
-  window.addEventListener('load', setStickyVars);
-  window.addEventListener('resize', () => {
-    clearTimeout(window.__stickyT);
-    window.__stickyT = setTimeout(setStickyVars, 100);
-  });
-
-  // collapse 動畫期間平滑更新，避免高度變化時主容器閃爍或露縫
-  let smoothTimer = null;
-  function startSmooth() { stopSmooth(); smoothTimer = setInterval(setStickyVars, 16); }
-  function stopSmooth()  { if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; } }
-
-  document.addEventListener('show.bs.collapse', startSmooth);
-  document.addEventListener('hide.bs.collapse', startSmooth);
-  document.addEventListener('shown.bs.collapse', () => { stopSmooth(); setStickyVars(); });
-  document.addEventListener('hidden.bs.collapse', () => { stopSmooth(); setStickyVars(); });
 }
+
   let smoothTimer = null;
   function startSmoothCollapseWatch() {
     stopSmoothCollapseWatch();
