@@ -44,7 +44,7 @@ const CAT_BADGE_RULES = {
    "在地飲品":[{count:1,name:"在地飲品入門",icon:"fa-solid fa-mug-hot"},{count:3,name:"在地飲品達人",icon:"fa-solid fa-martini-glass-citrus"}],
    "金門名產":[{count:2,name:"名產入門",icon:"fa-solid fa-store"},{count:4,name:"名產收藏家",icon:"fa-solid fa-bag-shopping"}],
    "傳統點心":[{count:2,name:"點心入門",icon:"fa-solid fa-cookie-bite"},{count:4,name:"點心達人",icon:"fa-solid fa-cake-candles"}],
-   "特色風獅爺":[{count:1,name:"風獅小行家",icon:"fa-solid fa-wind"},{count:3,name:"風獅守護者",icon:"fa-solid fa-dragon"}]
+   "風獅爺":[{count:1,name:"風獅小行家",icon:"fa-solid fa-wind"},{count:3,name:"風獅守護者",icon:"fa-solid fa-dragon"}]
 };
 
 /* ===== 狀態 ===== */
