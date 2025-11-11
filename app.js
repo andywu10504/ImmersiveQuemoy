@@ -496,27 +496,27 @@ function setupStickyWatch(){
   function setStickyVars() {
     const nav  = document.getElementById('topNav');
     const bar1 = document.querySelector('.subbar-1');
-    const bar2 = document.querySelector('.subbar-2');
-    const bar3 = document.querySelector('.subbar-3');
 
     const navH  = nav  ? nav.getBoundingClientRect().height  : 56;
     const bar1H = bar1 ? bar1.getBoundingClientRect().height : 48;
-    const bar2H = bar2 ? bar2.getBoundingClientRect().height : 40;
-    const bar3H = bar3 ? bar3.getBoundingClientRect().height : 48;
 
     document.documentElement.style.setProperty('--navH',  navH  + 'px');
     document.documentElement.style.setProperty('--bar1H', bar1H + 'px');
-    document.documentElement.style.setProperty('--bar2H', bar2H + 'px');
-    document.documentElement.style.setProperty('--bar3H', bar3H + 'px');
   }
 
   window.addEventListener('load', setStickyVars);
   window.addEventListener('resize', () => { clearTimeout(window.__stickyT); window.__stickyT = setTimeout(setStickyVars, 100); });
 
-  document.addEventListener('show.bs.collapse', () => startSmoothCollapseWatch());
-  document.addEventListener('shown.bs.collapse', () => stopSmoothCollapseWatch());
-  document.addEventListener('hide.bs.collapse', () => startSmoothCollapseWatch());
-  document.addEventListener('hidden.bs.collapse', () => { stopSmoothCollapseWatch(); setStickyVars(); });
+  // 仍保留 collapse 動畫期間的平滑量測（但不需要再算 bar2/bar3）
+  let smoothTimer = null;
+  function startSmooth() { stopSmooth(); smoothTimer = setInterval(setStickyVars, 16); }
+  function stopSmooth()  { if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; } }
+
+  document.addEventListener('show.bs.collapse', startSmooth);
+  document.addEventListener('hide.bs.collapse', startSmooth);
+  document.addEventListener('shown.bs.collapse', () => { stopSmooth(); setStickyVars(); });
+  document.addEventListener('hidden.bs.collapse', () => { stopSmooth(); setStickyVars(); });
+}
 
   let smoothTimer = null;
   function startSmoothCollapseWatch() {
