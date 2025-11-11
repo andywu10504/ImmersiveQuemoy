@@ -23,20 +23,33 @@
   <link rel="icon" href="icon-192.png">
 
   <style>
-    html, body { height: 100%; }
-    body{background:#f7f7f9;}
+    :root{
+      --navH:56px;   /* 由 JS 實測覆寫 */
+      --bar1H:48px;  /* 進度列高度（含內距）；由 JS 實測覆寫 */
+      --stackH:40px; /* 徽章+分類容器高度（展開時自動撐高）；只需計入最上層邊框 */
+      --headerTotal: calc(var(--navH) + var(--bar1H) + var(--stackH));
+    }
 
-    /* Map */
-    #map{height:48vh;border-radius:8px;border:1px solid #dee2e6;}
+    html, body { height: 100%; }
+    body{ background:#f7f7f9; overflow:hidden; } /* 關鍵：整頁不滾，由下方主內容自己滾 */
+
+    /* 讓內容區自行滾動（不影響上方固定區） */
+    .main-scroll{
+      height: calc(100vh - var(--headerTotal));
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+      background:#f7f7f9;
+    }
+
+    /* 地圖區 */
+    #map{height:48vh; border-radius:8px; border:1px solid #dee2e6;}
     @media (min-width:1200px){ #map{height:56vh;} }
 
-    /* Tags / chips */
     .tag{display:inline-block;padding:.2rem .5rem;border:1px solid #adb5bd;border-radius:999px;font-size:.8rem;margin-right:.25rem;color:#495057;background:#fff;}
     .filter-pill{cursor:pointer}
     .filter-pill.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
     .list-empty{padding:3rem 1rem;color:#868e96;text-align:center}
 
-    /* Card collected stamp */
     .card.collected{border-color:#20c997;box-shadow:0 0 0 .2rem rgba(32,201,151,.15);}
     .stamp{position:absolute;right:.5rem;bottom:.5rem;width:78px;height:78px;border:4px solid #d6336c;color:#d6336c;border-radius:50%;
            display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.15em;font-size:.9rem;
@@ -45,40 +58,36 @@
     @keyframes stampIn {0%{transform: rotate(-12deg) scale(.1);opacity:.0;}60%{transform: rotate(-12deg) scale(1.15);opacity:1;}100%{transform: rotate(-12deg) scale(1);opacity:.92;}}
     .stamp.punch{animation: stampIn .38s cubic-bezier(.2,1,.2,1);}
 
-    /* Badge chips */
     .badge-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:999px;font-weight:600;border:1px solid #dee2e6;background:#fff;color:#495057;}
     .badge-strong{background:#198754;color:#fff;border-color:#198754;}
     .badge-muted{background:#f1f3f5;color:#6c757d;}
     .pop-zoom{animation:pop .4s ease;}
     @keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:scale(1);opacity:1}}
 
-    /* 仍保留 Navbar 為最上層 sticky */
+    /* 固定區（navbar + 進度 + 徽章+分類）都用 sticky 疊高 */
     .navbar.sticky-top { position: sticky; top: 0; z-index: 1030; }
-    
-    /* 第一層：進度列 */
-    .subbar-1{ position: sticky; top: var(--navH,56px); z-index: 1020; background:#fff; border-bottom:1px solid #e9ecef; }
-    
-    /* 第二層（新）：徽章(可收合) + 分類（同一層） */
-    .sticky-stack{
-      position: sticky;
-      top: calc(var(--navH,56px) + var(--bar1H,48px)); /* 緊貼第一層底下 */
-      z-index: 1015;
-      background:#fff;
-      border-bottom:1px solid #e9ecef;
-      overflow: hidden;              /* 關鍵：避免 collapse 高度動畫時露出底層畫面 */
+
+    .subbar-1{
+      position: sticky; top: var(--navH);
+      z-index: 1020; background:#fff; border-bottom:1px solid #e9ecef;
     }
 
-    /* 統一邊線：用相鄰選擇器把 1px 重疊，消除「縫隙」 */
-    .subbar { border-bottom:1px solid #e9ecef; }
-    .subbar + .subbar { margin-top:-1px; } /* 關鍵：把相鄰兩條底線重疊 → 看起來無縫 */
+    .sticky-stack{
+      position: sticky; top: calc(var(--navH) + var(--bar1H));
+      z-index: 1015; background:#fff; border-bottom:1px solid #e9ecef;
+      overflow:hidden; /* 關鍵：collapse 動畫不露底 */
+    }
 
-    /* Sticky 需要父層不能 overflow hidden/auto，預設 body 無此問題；此處保險處理主要容器 */
-    .container, .container-fluid { overflow: visible; }
+    /* 讓 collapse 區塊本身不產生額外邊距，避免「露縫」 */
+    #badgeCollapse .container{ padding-top:.5rem; padding-bottom:.5rem; }
+
+    /* iOS A2HS 提示（modal） */
+    .ios-tip .ios-icons{font-size:1.2rem}
   </style>
 </head>
 <body>
 
-  <!-- Navbar（固定不滾動） -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top" id="topNav">
     <div class="container-fluid px-3">
       <a class="navbar-brand fw-bold" href="#">
@@ -106,7 +115,7 @@
   </nav>
 
   <!-- 進度列（Sticky 第一層） -->
-  <div class="py-2 bg-light subbar subbar-1">
+  <div class="py-2 bg-light border-bottom subbar-1">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between mb-1">
         <div class="small text-muted">進度：<span id="progressText">0 / 0</span></div>
@@ -115,12 +124,12 @@
             <i class="fa-solid fa-award me-1"></i>查看全部徽章
           </button>
 
-          <!-- A2HS：可安裝才會顯示（Android 原生 / iOS 教學同一顆按鈕） -->
+          <!-- A2HS：可安裝才會顯示 -->
           <button id="btnA2HS" class="btn btn-sm btn-success d-none">
             <i class="fa-solid fa-plus"></i> 新增到主畫面
           </button>
 
-          <!-- 這顆按鈕直接綁 Bootstrap Collapse -->
+          <!-- 直接綁 Bootstrap Collapse -->
           <button id="btnToggleBadges"
                   class="btn btn-sm btn-outline-secondary"
                   data-bs-toggle="collapse"
@@ -137,8 +146,8 @@
     </div>
   </div>
 
-  <!-- 徽章 + 分類（同一層 Sticky 第二層） -->
-  <div class="sticky-stack">
+  <!-- 徽章 + 分類（Sticky 第二層，與上層相依） -->
+  <div class="sticky-stack" id="stickyStack">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
         <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
@@ -149,13 +158,15 @@
     </div>
   </div>
 
-  <!-- 主內容 -->
-  <div class="container my-3">
-    <div id="map" class="mb-3"></div>
+  <!-- 主內容：只在這裡滾動 -->
+  <div class="main-scroll">
+    <div class="container my-3">
+      <div id="map" class="mb-3"></div>
 
-    <div id="list" class="row g-3"></div>
-    <div id="empty" class="list-empty d-none">
-      <i class="fa-regular fa-face-meh"></i> 沒有符合條件的項目。
+      <div id="list" class="row g-3"></div>
+      <div id="empty" class="list-empty d-none">
+        <i class="fa-regular fa-face-meh"></i> 沒有符合條件的項目。
+      </div>
     </div>
   </div>
 
@@ -230,21 +241,20 @@
     </div>
   </div>
 
-  <!-- iOS 加到主畫面教學 Modal -->
-  <div class="modal fade" id="iosA2HSModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+  <!-- A2HS：iOS 指南 Modal -->
+  <div class="modal fade ios-tip" id="iosTip" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title"><i class="fa-solid fa-plus me-2"></i>新增到主畫面</h5>
+          <h6 class="modal-title"><i class="fa-brands fa-apple me-2"></i>加入主畫面</h6>
           <button class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
         </div>
         <div class="modal-body">
+          <p>在 iPhone / iPad 上：</p>
           <ol class="mb-0">
-            <li>使用 Safari 開啟本頁（iPhone / iPad）。</li>
-            <li>點右下角的 <strong>分享</strong> 按鈕。</li>
-            <li>選擇 <strong>加入主畫面</strong>，再點 <strong>加入</strong>。</li>
+            <li>點擊 Safari 的 <span class="ios-icons">分享 <i class="fa-solid fa-arrow-up-from-bracket"></i></span> 按鈕</li>
+            <li>選擇 <strong>加入主畫面</strong></li>
           </ol>
-          <div class="small text-muted mt-2">提示：若已安裝或以獨立視窗開啟，按鈕會自動隱藏。</div>
         </div>
       </div>
     </div>
@@ -252,6 +262,43 @@
 
   <!-- App JS + PWA -->
   <script src="app.js"></script>
-  <script src="pwa.js"></script>
+
+  <!-- 輕量 A2HS 控制（同顆按鈕支援 Android 與 iOS） -->
+  <script>
+  (function(){
+    let deferredPrompt = null;
+    const btn = document.getElementById('btnA2HS');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      btn.classList.remove('d-none');  // Android 可安裝
+    });
+
+    btn.addEventListener('click', async () => {
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+      if (isIOS && !isStandalone) {
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('iosTip')).show();
+        return;
+      }
+
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        try { await deferredPrompt.userChoice; } finally { deferredPrompt = null; }
+      }
+    });
+
+    // iOS 上沒 beforeinstallprompt，但我們可以顯示提示按鈕讓使用者打開說明
+    window.addEventListener('load', () => {
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isIOS && !isStandalone) {
+        document.getElementById('btnA2HS').classList.remove('d-none');
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
