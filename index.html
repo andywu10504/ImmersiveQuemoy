@@ -91,9 +91,19 @@
           <button id="btnAllBadges" class="btn btn-sm btn-outline-primary">
             <i class="fa-solid fa-award me-1"></i>查看全部徽章
           </button>
-          <!-- 這顆按鈕會自動切換文案與 icon -->
-          <button id="btnToggleBadges" class="btn btn-sm btn-outline-secondary"
-                  aria-expanded="false" aria-controls="badgeCollapse">
+
+          <!-- A2HS：可安裝才會顯示 -->
+          <button id="btnA2HS" class="btn btn-sm btn-success d-none">
+            <i class="fa-solid fa-plus"></i> 新增到主畫面
+          </button>
+
+          <!-- 這顆按鈕直接綁 Bootstrap Collapse -->
+          <button id="btnToggleBadges"
+                  class="btn btn-sm btn-outline-secondary"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#badgeCollapse"
+                  aria-controls="badgeCollapse"
+                  aria-expanded="false">
             <i class="fa-solid fa-chevron-down me-1"></i> 展開徽章
           </button>
         </div>
@@ -104,7 +114,7 @@
     </div>
   </div>
 
-  <!-- 徽章列（預設收合：不含 show） -->
+  <!-- 徽章列（預設收合：無 show） -->
   <div class="subbar subbar-2 bg-white border-bottom">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
