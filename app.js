@@ -37,7 +37,7 @@ const CAT_BADGE_RULES = {
   "特約茶室":[{count:1,name:"特約入門",icon:"fa-solid fa-martini-glass"},{count:2,name:"特約知行",icon:"fa-solid fa-landmark-dome"}],
   "戰時文化":[{count:1,name:"戰時印記",icon:"fa-solid fa-helmet-safety"},{count:2,name:"戰時通識",icon:"fa-solid fa-shield-virus"}],
   "地形樣態":[{count:1,name:"潮汐行者",icon:"fa-solid fa-water"}],
-  "戰史館":[{count:1,name:"戰史入門",icon:"fa-solid fa-landmark-dome"},{count:2,name:"戰史達人",icon:"fa-solid fa-book"}],
+  "戰地史料":[{count:1,name:"戰史入門",icon:"fa-solid fa-landmark-dome"},{count:2,name:"戰史達人",icon:"fa-solid fa-book"}],
   "書院":[{count:1,name:"書院初探",icon:"fa-solid fa-book-open-reader"},{count:2,name:"書院通",icon:"fa-solid fa-feather-pointed"}],
   "沙灘":[{count:1,name:"海風初見",icon:"fa-solid fa-umbrella-beach"},{count:2,name:"海灘守護者",icon:"fa-solid fa-recycle"}],
   "在地美食":[{count:2,name:"在地美食入門",icon:"fa-solid fa-bowl-food"},{count:4,name:"在地美食饕客",icon:"fa-solid fa-utensils"}],
