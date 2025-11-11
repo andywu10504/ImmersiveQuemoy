@@ -552,4 +552,3 @@ function setupStickyWatch(){
   function stopSmoothCollapseWatch() {
     if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; }
   }
-}
