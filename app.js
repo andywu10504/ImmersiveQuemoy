@@ -491,46 +491,39 @@ function countCollectedByCategory(cat){
   return n;
 }
 
-/* ===== Sticky 高度校正 ===== */
+/* ===== Sticky 高度校正（無縫、單一實作） ===== */
 function setupStickyWatch(){
-  function setStickyVars() {
-    const nav   = document.getElementById('topNav');         // Navbar
-    const bar1  = document.querySelector('.subbar-1');       // 進度列
-    const stack = document.getElementById('stickyStack');    // 徽章+分類（含 collapse）
+  const root = document.documentElement;
+  let rafId = null;
 
-    const navH   = nav   ? nav.getBoundingClientRect().height   : 56;
-    const bar1H  = bar1  ? bar1.getBoundingClientRect().height  : 48;
-    const stackH = stack ? stack.getBoundingClientRect().height : 40;
+  function setStickyVars(){
+    const nav  = document.getElementById('topNav');           // Navbar (sticky-top)
+    const bar1 = document.querySelector('.subbar-1');         // 進度列
+    const bar2 = document.getElementById('badgeCollapse');    // 徽章收合區（可能為 0 高度）
+    const bar3 = document.querySelector('.subbar-3');         // 分類篩選
 
-    document.documentElement.style.setProperty('--navH',   navH  + 'px');
-    document.documentElement.style.setProperty('--bar1H',  bar1H + 'px');
-    document.documentElement.style.setProperty('--stackH', stackH + 'px');
-    document.documentElement.style.setProperty('--headerTotal', (navH + bar1H + stackH) + 'px');
+    const navH  = nav  ? Math.round(nav.getBoundingClientRect().height)  : 56;
+    const bar1H = bar1 ? Math.round(bar1.getBoundingClientRect().height) : 48;
+    const bar2H = bar2 ? Math.round(bar2.getBoundingClientRect().height) : 0;
+    const bar3H = bar3 ? Math.round(bar3.getBoundingClientRect().height) : 48;
+
+    root.style.setProperty('--navH',  navH  + 'px');
+    root.style.setProperty('--bar1H', bar1H + 'px');
+    root.style.setProperty('--bar2H', bar2H + 'px');
+    root.style.setProperty('--bar3H', bar3H + 'px');
   }
 
-  // 初始 & 視窗改變
+  const schedule = ()=> {
+    if (rafId) return;
+    rafId = requestAnimationFrame(()=>{ rafId = null; setStickyVars(); });
+  };
+
   window.addEventListener('load', setStickyVars);
-  window.addEventListener('resize', () => {
-    clearTimeout(window.__stickyT);
-    window.__stickyT = setTimeout(setStickyVars, 100);
-  });
+  window.addEventListener('resize', schedule);
 
-  // collapse 動畫期間平滑更新，避免高度變化時主容器閃爍或露縫
-  let smoothTimer = null;
-  function startSmooth() { stopSmooth(); smoothTimer = setInterval(setStickyVars, 16); }
-  function stopSmooth()  { if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; } }
-
-  document.addEventListener('show.bs.collapse', startSmooth);
-  document.addEventListener('hide.bs.collapse', startSmooth);
-  document.addEventListener('shown.bs.collapse', () => { stopSmooth(); setStickyVars(); });
-  document.addEventListener('hidden.bs.collapse', () => { stopSmooth(); setStickyVars(); });
+  // Bootstrap Collapse 高度變化時重新量測，避免露縫/閃爍
+  document.addEventListener('show.bs.collapse', schedule);
+  document.addEventListener('shown.bs.collapse', schedule);
+  document.addEventListener('hide.bs.collapse', schedule);
+  document.addEventListener('hidden.bs.collapse', schedule);
 }
-
-  let smoothTimer = null;
-  function startSmoothCollapseWatch() {
-    stopSmoothCollapseWatch();
-    smoothTimer = setInterval(setStickyVars, 16); // 約 60fps
-  }
-  function stopSmoothCollapseWatch() {
-    if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; }
-  }
