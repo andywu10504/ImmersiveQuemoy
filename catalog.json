@@ -82,15 +82,15 @@
   { "id":"T_NiuE","name":"牛軛餅","category":"傳統點心","tags":["古早味","在地餅"],"address":"多店家","desc":"以牛軛意象命名的傳統餅。","quests":["拍餅紋","寫口感關鍵詞"] },
   { "id":"T_SuoZaiGu","name":"索仔股","category":"傳統點心","tags":["傳統","點心"],"address":"多店家","desc":"在地傳統點心之一。","quests":["拍外觀","寫 20 字口感"] },
 
-  { "id":"WL_99","name":"九十九尊風獅爺","category":"特色風獅爺","tags":["守護","群像"],"address":"多地","desc":"以風獅爺守護群像為主題的蒐集任務。","quests":["拍 3 尊不同造型","寫你最喜歡的寓意"] },
-  { "id":"WL_Qionglin","name":"瓊林風獅爺","category":"特色風獅爺","tags":["瓊林"],"address":"瓊林聚落","desc":"聚落意象濃厚的金門觀光代言者風獅爺。","quests":["拍與聚落環境合照","寫守護寓意"] },
-  { "id":"WL_Dongzhou","name":"東洲風獅爺","category":"特色風獅爺","tags":["傳說","辦案"],"address":"東洲聚落","desc":"相傳協助村落抓兇手的風獅爺。","quests":["拍合影","寫 20 字故事摘要"] },
-  { "id":"WL_GuanAo","name":"官澳風獅爺","category":"特色風獅爺","tags":["造型","特色"],"address":"官澳聚落","desc":"少見穿裙子的造型。","quests":["拍造型重點","寫設計觀察"] },
-  { "id":"WL_Anqi","name":"安岐風獅爺","category":"特色風獅爺","tags":["高度","地標"],"address":"安岐聚落","desc":"聚落中最高的風獅爺。","quests":["拍仰角構圖","寫 1 句評語"] },
-  { "id":"WL_Jinmencheng","name":"金門城風獅爺","category":"特色風獅爺","tags":["歷史","最悠久"],"address":"金門城","desc":"歷史最悠久的風獅爺。","quests":["拍近景與遠景各一","寫歷史印象"] },
-  { "id":"WL_Xiyuan","name":"西園風獅爺","category":"特色風獅爺","tags":["郵票","紀念"],"address":"金沙鎮西園","desc":"登上郵票的風獅爺形象。","quests":["拍姿態","寫 20 字寓意"] },
-  { "id":"WL_Qingyu","name":"青嶼風獅爺","category":"特色風獅爺","tags":["由私到公","變遷"],"address":"金沙鎮青嶼","desc":"從私宅轉為村落供奉的故事。","quests":["拍供奉環境","寫 20 字心情"] },
-  { "id":"WL_Xiashu","name":"夏墅風獅爺","category":"特色風獅爺","tags":["可愛","造型"],"address":"夏墅聚落","desc":"造型被暱稱為『小叮噹』。","quests":["拍可愛重點","寫 1 句評語"] },
-  { "id":"WL_Min","name":"瓊林風獅爺","category":"特色風獅爺","tags":["最小","趣味"],"address":"瓊林聚落","desc":"金門最小的風獅爺。","quests":["拍比例對比","寫趣味觀察"] },
-  { "id":"WL_Xifang","name":"西方風獅爺","category":"特色風獅爺","tags":["百年","歷史"],"address":"西方聚落","desc":"百年風獅爺，歷經歲月仍守護聚落。","quests":["拍風化細節","寫 20 字感想"] }
+  { "id":"WL_99","name":"九十九尊風獅爺","category":"風獅爺","tags":["守護","群像"],"address":"多地","desc":"以風獅爺守護群像為主題的蒐集任務。","quests":["拍 3 尊不同造型","寫你最喜歡的寓意"] },
+  { "id":"WL_Qionglin","name":"瓊林風獅爺","category":"風獅爺","tags":["瓊林"],"address":"瓊林聚落","desc":"聚落意象濃厚的金門觀光代言者風獅爺。","quests":["拍與聚落環境合照","寫守護寓意"] },
+  { "id":"WL_Dongzhou","name":"東洲風獅爺","category":"風獅爺","tags":["傳說","辦案"],"address":"東洲聚落","desc":"相傳協助村落抓兇手的風獅爺。","quests":["拍合影","寫 20 字故事摘要"] },
+  { "id":"WL_GuanAo","name":"官澳風獅爺","category":"風獅爺","tags":["造型","特色"],"address":"官澳聚落","desc":"少見穿裙子的造型。","quests":["拍造型重點","寫設計觀察"] },
+  { "id":"WL_Anqi","name":"安岐風獅爺","category":"風獅爺","tags":["高度","地標"],"address":"安岐聚落","desc":"聚落中最高的風獅爺。","quests":["拍仰角構圖","寫 1 句評語"] },
+  { "id":"WL_Jinmencheng","name":"金門城風獅爺","category":"風獅爺","tags":["歷史","最悠久"],"address":"金門城","desc":"歷史最悠久的風獅爺。","quests":["拍近景與遠景各一","寫歷史印象"] },
+  { "id":"WL_Xiyuan","name":"西園風獅爺","category":"風獅爺","tags":["郵票","紀念"],"address":"金沙鎮西園","desc":"登上郵票的風獅爺形象。","quests":["拍姿態","寫 20 字寓意"] },
+  { "id":"WL_Qingyu","name":"青嶼風獅爺","category":"風獅爺","tags":["由私到公","變遷"],"address":"金沙鎮青嶼","desc":"從私宅轉為村落供奉的故事。","quests":["拍供奉環境","寫 20 字心情"] },
+  { "id":"WL_Xiashu","name":"夏墅風獅爺","category":"風獅爺","tags":["可愛","造型"],"address":"夏墅聚落","desc":"造型被暱稱為『小叮噹』。","quests":["拍可愛重點","寫 1 句評語"] },
+  { "id":"WL_Min","name":"瓊林風獅爺","category":"風獅爺","tags":["最小","趣味"],"address":"瓊林聚落","desc":"金門最小的風獅爺。","quests":["拍比例對比","寫趣味觀察"] },
+  { "id":"WL_Xifang","name":"西方風獅爺","category":"風獅爺","tags":["百年","歷史"],"address":"西方聚落","desc":"百年風獅爺，歷經歲月仍守護聚落。","quests":["拍風化細節","寫 20 字感想"] }
 ]
