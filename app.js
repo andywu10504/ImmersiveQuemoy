@@ -524,9 +524,7 @@ function setupStickyWatch(){
   document.addEventListener('hide.bs.collapse', startSmooth);
   document.addEventListener('shown.bs.collapse', () => { stopSmooth(); setStickyVars(); });
   document.addEventListener('hidden.bs.collapse', () => { stopSmooth(); setStickyVars(); });
-}
-
-
+   
   // 初始 & 視窗改變
   window.addEventListener('load', setStickyVars);
   window.addEventListener('resize', () => {
@@ -552,3 +550,4 @@ function setupStickyWatch(){
   function stopSmoothCollapseWatch() {
     if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; }
   }
+}
