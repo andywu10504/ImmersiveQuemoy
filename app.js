@@ -535,4 +535,3 @@ function setupStickyWatch(){
     if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; }
   }
 }
-}
