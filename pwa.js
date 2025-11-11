@@ -1,30 +1,63 @@
-// Service Worker（若你有 sw.js 就會註冊）
+// pwa.js
+let deferredPrompt = null;
+const btnA2HS = document.getElementById('btnA2HS');
+
+/* 註冊 service worker（若有 sw.js） */
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 
-// A2HS（Add to Home Screen）
-let deferredPrompt = null;
-const a2hsBtn = document.getElementById('btnA2HS');
+/* 判斷是否已安裝（避免已安裝仍顯示按鈕） */
+function isStandalone() {
+  const mq = window.matchMedia('(display-mode: standalone)').matches;
+  return mq || window.navigator.standalone === true;
+}
 
+/* 平台檢測 */
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+function isAndroid() {
+  return /android/i.test(window.navigator.userAgent);
+}
+
+/* Android：攔截 beforeinstallprompt */
 window.addEventListener('beforeinstallprompt', (e) => {
-  // 阻止自動彈窗，改用自訂按鈕
+  // 阻止自動彈出
   e.preventDefault();
   deferredPrompt = e;
-  if (a2hsBtn) a2hsBtn.classList.remove('d-none');
+
+  if (!isStandalone()) {
+    btnA2HS.classList.remove('d-none');
+  }
 });
 
-if (a2hsBtn) {
-  a2hsBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    // 安裝後或取消都隱藏按鈕
-    a2hsBtn.classList.add('d-none');
-    deferredPrompt = null;
-  });
-}
+/* iOS：沒有 beforeinstallprompt，用教學 Modal */
+window.addEventListener('load', () => {
+  if (isStandalone()) {
+    btnA2HS.classList.add('d-none');
+    return;
+  }
+  // 若非 Android（沒有 beforeinstallprompt），且是 iOS 並用 Safari，顯示按鈕
+  if (isIOS()) {
+    btnA2HS.classList.remove('d-none');
+  }
+});
 
-// iOS Safari 無 beforeinstallprompt：可選擇持續顯示提示（這裡一律由 beforeinstallprompt 控制顯示）
+/* 按鈕點擊：Android 用原生 prompt；iOS 彈教學 Modal */
+btnA2HS?.addEventListener('click', async () => {
+  // Android：有 deferredPrompt 就走原生
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    try {
+      await deferredPrompt.userChoice;
+    } catch (_) {}
+    deferredPrompt = null;
+    btnA2HS.classList.add('d-none');
+    return;
+  }
+
+  // iOS：打開說明
+  const m = document.getElementById('iosA2HSModal');
+  if (m) bootstrap.Modal.getOrCreateInstance(m).show();
+});
