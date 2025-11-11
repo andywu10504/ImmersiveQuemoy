@@ -492,22 +492,31 @@ function countCollectedByCategory(cat){
 }
 
 /* ===== Sticky 高度校正（解決收回時卡卡） ===== */
+/* ===== Sticky 高度校正（Header 固定＋內容容器獨立滾動） ===== */
 function setupStickyWatch(){
   function setStickyVars() {
-    const nav  = document.getElementById('topNav');
-    const bar1 = document.querySelector('.subbar-1');
+    const nav   = document.getElementById('topNav');         // Navbar
+    const bar1  = document.querySelector('.subbar-1');       // 進度列
+    const stack = document.getElementById('stickyStack');    // 徽章+分類（含 collapse）
 
-    const navH  = nav  ? nav.getBoundingClientRect().height  : 56;
-    const bar1H = bar1 ? bar1.getBoundingClientRect().height : 48;
+    const navH   = nav   ? nav.getBoundingClientRect().height   : 56;
+    const bar1H  = bar1  ? bar1.getBoundingClientRect().height  : 48;
+    const stackH = stack ? stack.getBoundingClientRect().height : 40;
 
-    document.documentElement.style.setProperty('--navH',  navH  + 'px');
-    document.documentElement.style.setProperty('--bar1H', bar1H + 'px');
+    document.documentElement.style.setProperty('--navH',   navH  + 'px');
+    document.documentElement.style.setProperty('--bar1H',  bar1H + 'px');
+    document.documentElement.style.setProperty('--stackH', stackH + 'px');
+    document.documentElement.style.setProperty('--headerTotal', (navH + bar1H + stackH) + 'px');
   }
 
+  // 初始 & 視窗改變
   window.addEventListener('load', setStickyVars);
-  window.addEventListener('resize', () => { clearTimeout(window.__stickyT); window.__stickyT = setTimeout(setStickyVars, 100); });
+  window.addEventListener('resize', () => {
+    clearTimeout(window.__stickyT);
+    window.__stickyT = setTimeout(setStickyVars, 100);
+  });
 
-  // 仍保留 collapse 動畫期間的平滑量測（但不需要再算 bar2/bar3）
+  // collapse 動畫期間平滑更新，避免高度變化時主容器閃爍或露縫
   let smoothTimer = null;
   function startSmooth() { stopSmooth(); smoothTimer = setInterval(setStickyVars, 16); }
   function stopSmooth()  { if (smoothTimer) { clearInterval(smoothTimer); smoothTimer = null; } }
@@ -517,7 +526,6 @@ function setupStickyWatch(){
   document.addEventListener('shown.bs.collapse', () => { stopSmooth(); setStickyVars(); });
   document.addEventListener('hidden.bs.collapse', () => { stopSmooth(); setStickyVars(); });
 }
-
   let smoothTimer = null;
   function startSmoothCollapseWatch() {
     stopSmoothCollapseWatch();
