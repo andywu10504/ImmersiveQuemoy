@@ -23,28 +23,28 @@ const BADGE_RULES = [
 
 /* ===== 分類徽章門檻 ===== */
 const CAT_BADGE_RULES = {
-   "在地文化":[{count:2,name:"在地文化入門",icon:"fa-solid fa-book-open"},{count:4,name:"在地文化巡禮",icon:"fa-solid fa-chess-rook"}],
-   "戰地坑道":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
-   "防禦工事":[{count:2, name:"防禦入門", icon:"fa-solid fa-shield-halved"},  {count:4, name:"防禦巡禮", icon:"fa-solid fa-fort-awesome"}],
-   "營區":[{count:1, name:"營區初探", icon:"fa-solid fa-tent"},  {count:3, name:"營區達人", icon:"fa-solid fa-helmet-safety"}],
-   "金門日常":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
-   "洋樓建築":[{count:1,name:"洋樓入門",icon:"fa-solid fa-building-columns"},{count:2,name:"洋樓達人",icon:"fa-solid fa-landmark"}],
-   "碉堡":[{count:2,name:"碉堡入門",icon:"fa-solid fa-shield-halved"},{count:4,name:"碉堡巡禮",icon:"fa-solid fa-shield"}],
-   "播音牆":[{count:1,name:"心戰印記",icon:"fa-solid fa-bullhorn"},{count:2,name:"播音牆通",icon:"fa-solid fa-tower-broadcast"}],
-   "太武山":[{count:1,name:"太武初遇",icon:"fa-solid fa-mountain"},{count:2,name:"太武巡禮",icon:"fa-solid fa-person-hiking"}],
-   "閩南建築(古厝)":[{count:1,name:"古厝入門",icon:"fa-solid fa-house-chimney"},{count:2,name:"古厝達人",icon:"fa-solid fa-chess-rook"}],
-   "濕地":[{count:1,name:"濕地初探",icon:"fa-solid fa-water"},{count:2,name:"濕地守護者",icon:"fa-solid fa-recycle"}],
-   "特約茶室":[{count:1,name:"特約入門",icon:"fa-solid fa-martini-glass"},{count:2,name:"特約知行",icon:"fa-solid fa-landmark-dome"}],
-   "戰時文化":[{count:1,name:"戰時印記",icon:"fa-solid fa-helmet-safety"},{count:2,name:"戰時通識",icon:"fa-solid fa-shield-virus"}],
-   "地形樣態":[{count:1,name:"潮汐行者",icon:"fa-solid fa-water"}],
-   "戰史館":[{count:1,name:"戰史入門",icon:"fa-solid fa-landmark-dome"},{count:2,name:"戰史達人",icon:"fa-solid fa-book"}],
-   "書院":[{count:1,name:"書院初探",icon:"fa-solid fa-book-open-reader"},{count:2,name:"書院通",icon:"fa-solid fa-feather-pointed"}],
-   "沙灘":[{count:1,name:"海風初見",icon:"fa-solid fa-umbrella-beach"},{count:2,name:"海灘守護者",icon:"fa-solid fa-recycle"}],
-   "在地美食":[{count:2,name:"在地美食入門",icon:"fa-solid fa-bowl-food"},{count:4,name:"在地美食饕客",icon:"fa-solid fa-utensils"}],
-   "在地飲品":[{count:1,name:"在地飲品入門",icon:"fa-solid fa-mug-hot"},{count:3,name:"在地飲品達人",icon:"fa-solid fa-martini-glass-citrus"}],
-   "金門名產":[{count:2,name:"名產入門",icon:"fa-solid fa-store"},{count:4,name:"名產收藏家",icon:"fa-solid fa-bag-shopping"}],
-   "傳統點心":[{count:2,name:"點心入門",icon:"fa-solid fa-cookie-bite"},{count:4,name:"點心達人",icon:"fa-solid fa-cake-candles"}],
-   "風獅爺":[{count:1,name:"風獅小行家",icon:"fa-solid fa-wind"},{count:3,name:"風獅守護者",icon:"fa-solid fa-dragon"}]
+  "在地文化":[{count:2,name:"在地文化入門",icon:"fa-solid fa-book-open"},{count:4,name:"在地文化巡禮",icon:"fa-solid fa-chess-rook"}],
+  "戰地坑道":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
+  "防禦工事":[{count:2, name:"防禦入門", icon:"fa-solid fa-shield-halved"},  {count:4, name:"防禦巡禮", icon:"fa-solid fa-fort-awesome"}],
+  "營區":[{count:1, name:"營區初探", icon:"fa-solid fa-tent"},  {count:3, name:"營區達人", icon:"fa-solid fa-helmet-safety"}],
+  "金門日常":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
+  "洋樓建築":[{count:1,name:"洋樓入門",icon:"fa-solid fa-building-columns"},{count:2,name:"洋樓達人",icon:"fa-solid fa-landmark"}],
+  "碉堡":[{count:2,name:"碉堡入門",icon:"fa-solid fa-shield-halved"},{count:4,name:"碉堡巡禮",icon:"fa-solid fa-shield"}],
+  "播音牆":[{count:1,name:"心戰印記",icon:"fa-solid fa-bullhorn"},{count:2,name:"播音牆通",icon:"fa-solid fa-tower-broadcast"}],
+  "太武山":[{count:1,name:"太武初遇",icon:"fa-solid fa-mountain"},{count:2,name:"太武巡禮",icon:"fa-solid fa-person-hiking"}],
+  "閩南建築(古厝)":[{count:1,name:"古厝入門",icon:"fa-solid fa-house-chimney"},{count:2,name:"古厝達人",icon:"fa-solid fa-chess-rook"}],
+  "濕地":[{count:1,name:"濕地初探",icon:"fa-solid fa-water"},{count:2,name:"濕地守護者",icon:"fa-solid fa-recycle"}],
+  "特約茶室":[{count:1,name:"特約入門",icon:"fa-solid fa-martini-glass"},{count:2,name:"特約知行",icon:"fa-solid fa-landmark-dome"}],
+  "戰時文化":[{count:1,name:"戰時印記",icon:"fa-solid fa-helmet-safety"},{count:2,name:"戰時通識",icon:"fa-solid fa-shield-virus"}],
+  "地形樣態":[{count:1,name:"潮汐行者",icon:"fa-solid fa-water"}],
+  "戰史館":[{count:1,name:"戰史入門",icon:"fa-solid fa-landmark-dome"},{count:2,name:"戰史達人",icon:"fa-solid fa-book"}],
+  "書院":[{count:1,name:"書院初探",icon:"fa-solid fa-book-open-reader"},{count:2,name:"書院通",icon:"fa-solid fa-feather-pointed"}],
+  "沙灘":[{count:1,name:"海風初見",icon:"fa-solid fa-umbrella-beach"},{count:2,name:"海灘守護者",icon:"fa-solid fa-recycle"}],
+  "在地美食":[{count:2,name:"在地美食入門",icon:"fa-solid fa-bowl-food"},{count:4,name:"在地美食饕客",icon:"fa-solid fa-utensils"}],
+  "在地飲品":[{count:1,name:"在地飲品入門",icon:"fa-solid fa-mug-hot"},{count:3,name:"在地飲品達人",icon:"fa-solid fa-martini-glass-citrus"}],
+  "金門名產":[{count:2,name:"名產入門",icon:"fa-solid fa-store"},{count:4,name:"名產收藏家",icon:"fa-solid fa-bag-shopping"}],
+  "傳統點心":[{count:2,name:"點心入門",icon:"fa-solid fa-cookie-bite"},{count:4,name:"點心達人",icon:"fa-solid fa-cake-candles"}],
+  "風獅爺":[{count:1,name:"風獅小行家",icon:"fa-solid fa-wind"},{count:3,name:"風獅守護者",icon:"fa-solid fa-dragon"}]
 };
 
 /* ===== 狀態 ===== */
@@ -398,31 +398,31 @@ function wireEvents(){
 
   $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
 
-  // 收合/展開按鈕的文案與 icon 同步
+  // 收合/展開按鈕狀態同步（Bootstrap 事件）
   setupBadgeToggleButton();
 
-  // sticky 高度校正（收展徽章列時保持順暢）
+  // sticky 高度校正
   setupStickyWatch();
 }
 
 /* ===== 收合按鈕狀態同步 ===== */
 function setupBadgeToggleButton(){
-  const $btn = $("#btnToggleBadges");
-  const el = document.getElementById("badgeCollapse");
+  const btn = document.getElementById("btnToggleBadges");
+  const el  = document.getElementById("badgeCollapse");
 
-  // 預設為「展開徽章」
-  setBadgeToggleUI(false);
+  // 初始依據是否有 show 來設定
+  setBadgeToggleUI(el.classList.contains('show'));
 
-  el.addEventListener("show.bs.collapse", ()=> setBadgeToggleUI(true));
-  el.addEventListener("hide.bs.collapse", ()=> setBadgeToggleUI(false));
+  el.addEventListener("shown.bs.collapse", ()=> setBadgeToggleUI(true));
+  el.addEventListener("hidden.bs.collapse", ()=> setBadgeToggleUI(false));
 
   function setBadgeToggleUI(expanded){
     if(expanded){
-      $btn.html('<i class="fa-solid fa-chevron-up me-1"></i> 收合徽章');
-      $btn.attr('aria-expanded','true');
+      btn.innerHTML = '<i class="fa-solid fa-chevron-up me-1"></i> 收合徽章';
+      btn.setAttribute('aria-expanded','true');
     }else{
-      $btn.html('<i class="fa-solid fa-chevron-down me-1"></i> 展開徽章');
-      $btn.attr('aria-expanded','false');
+      btn.innerHTML = '<i class="fa-solid fa-chevron-down me-1"></i> 展開徽章';
+      btn.setAttribute('aria-expanded','false');
     }
   }
 }
