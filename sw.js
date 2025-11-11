@@ -2,9 +2,9 @@ const CACHE_NAME = 'kinmen-echo-v1';
 const FILES_TO_CACHE = [
   './',
   './index.html',
-  './data/catalog.json',
-  './js/app.js',
-  './js/pwa.js',
+  './catalog.json',
+  './app.js',
+  './pwa.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
