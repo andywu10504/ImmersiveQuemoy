@@ -173,7 +173,8 @@ function flyToItem(item){
 function renderCategoryFilters(){
   const $wrap = $("#catFilters").empty();
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
-  $wrap.append(`<span class="tag filter-pill active" data-cat="all"><i class="fa-solid fa-sliders"></i> 全部</span>");
+  // 這行結尾要用反引號 `
+  $wrap.append(`<span class="tag filter-pill active" data-cat="all"><i class="fa-solid fa-sliders"></i> 全部</span>`);
   cats.forEach(c=> $wrap.append(`<span class="tag filter-pill" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</span>`));
 }
 
