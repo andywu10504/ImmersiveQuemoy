@@ -358,7 +358,8 @@ function toggleCollect(id){
   checkCatBadgeUnlock(cat, beforeCat, afterCat);
 
   if (justAdded) {
-    punchStamp(id); // ← 新增動畫
+    const el = document.getElementById(`stamp-${id}`);
+    if (el){ el.classList.remove('punch'); void el.offsetWidth; el.classList.add('punch'); }
   }
 }
 
