@@ -6,38 +6,41 @@
   <title>金門回聲｜沉浸・集章・巡禮</title>
 
   <!-- ============ 基礎樣式、字型與地圖 ============ -->
+  <!-- Bootstrap 5.3.8 + Font Awesome 7 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
 
+  <!-- Leaflet -->
   <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- jQuery + Bootstrap JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- ============ PWA / Icons ============ -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ffffff">
-
-  <!-- Favicon（.ico）與多尺寸 PNG、Apple Icon -->
-  <link rel="icon" href="favicon.ico" sizes="any">                <!-- 傳統 .ico -->
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <!-- Favicon（桌面/桌機瀏覽器 .ico）-->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <!-- 也提供 PNG 版本（新瀏覽器）-->
+  <link rel="icon" type="image/png" href="icon-192.png" sizes="192x192">
+  <!-- iOS / iPadOS -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-  <!-- PWA 安裝能力 -->
-  <meta name="mobile-web-app-capable" content="yes">               <!-- 針對 Chrome (建議) -->
-  <meta name="apple-mobile-web-app-capable" content="yes">         <!-- iOS A2HS -->
+  <!-- A2HS -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- iOS fullscreen / 樣式 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="金門回聲">
 
   <!-- ============ 版面與滾動修正（含 iOS 高度修正） ============ -->
   <style>
     :root{
-      --navH:56px;
-      --bar1H:48px;
-      --bar2H:0px;
-      --bar3H:48px;
+      --navH:56px;      /* JS 會量測覆寫 */
+      --bar1H:48px;     /* 進度列 */
+      --bar2H:0px;      /* 徽章收合區（展開時會變） */
+      --bar3H:48px;     /* 分類區 */
       --stackH: calc(var(--bar2H) + var(--bar3H));
       --headerTotal: calc(var(--navH) + var(--bar1H) + var(--stackH));
     }
@@ -50,7 +53,6 @@
       -webkit-overflow-scrolling: touch;
       background:#f7f7f9;
     }
-
     #map{height:48vh; border-radius:8px; border:1px solid #dee2e6;}
     @media (min-width:1200px){ #map{height:56vh;} }
 
@@ -78,23 +80,24 @@
     .navbar.sticky-top { position: sticky; top: 0; z-index: 1030; }
 
     .subbar-1{
-      position: sticky; 
+      position: sticky;
       top: var(--navH);
-      z-index: 1020; 
-      background:#fff; 
+      z-index: 1020;
+      background:#fff;
       border-bottom:1px solid #e9ecef;
     }
 
     .sticky-stack{
-      position: sticky; 
+      position: sticky;
       top: calc(var(--navH) + var(--bar1H));
-      z-index: 1015; 
-      background:#fff; 
+      z-index: 1015;
+      background:#fff;
       border-bottom:1px solid #e9ecef;
       overflow:hidden;
     }
 
     #badgeCollapse .container{ padding-top:.5rem; padding-bottom:.5rem; }
+
     .ios-tip .ios-icons{font-size:1.2rem}
   </style>
 </head>
@@ -163,18 +166,17 @@
   <div class="sticky-stack" id="stickyStack">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
-        <!-- 這裡只會顯示「旅人報到 + 全域最高一枚 + 各類別進度」 -->
         <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
       </div>
     </div>
 
-    <!-- 分類列（供 JS 精準量測高度） -->
+    <!-- 類別篩選列 -->
     <div class="container py-2 subbar-3">
       <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
     </div>
   </div>
 
-  <!-- ============ 主內容（只在此滾動） ============ -->
+  <!-- ============ 主內容 ============ -->
   <div class="main-scroll">
     <div class="container my-3">
       <div id="map" class="mb-3"></div>
@@ -279,7 +281,7 @@
   <!-- ============ App JS ============ -->
   <script src="app.js"></script>
 
-  <!-- ============ 輕量 A2HS 控制 ============ -->
+  <!-- ============ 輕量 A2HS 控制（同顆按鈕支援 Android 與 iOS） ============ -->
   <script>
   (function(){
     let deferredPrompt = null;
@@ -288,7 +290,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      btn.classList.remove('d-none');
+      btn.classList.remove('d-none');  // Android 可安裝時才會顯示
     });
 
     btn.addEventListener('click', async () => {
@@ -306,7 +308,6 @@
       }
     });
 
-    // iOS 上沒有 beforeinstallprompt：露出按鈕顯示教學
     window.addEventListener('load', () => {
       const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
