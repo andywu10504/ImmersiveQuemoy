@@ -7,13 +7,17 @@ async function loadCatalog() {
   return await res.json();
 }
 
-/* ===== LocalStorage Keys ===== */
+/* ===============================
+   LocalStorage Keys
+   =============================== */
 const LS_KEY        = "kinmen_collect_v1";
 const LS_BADGE      = "kinmen_badges_v1";
 const LS_ARR        = "kinmen_arrival_v1";
 const LS_BADGE_CAT  = "kinmen_badges_cat_v1";
 
-/* ===== 全域徽章 ===== */
+/* ===============================
+   全域徽章規則
+   =============================== */
 const BADGE_RULES = [
   {count:1 , name:"入門",      icon:"fa-solid fa-flag"},
   {count:3 , name:"在地達人",  icon:"fa-solid fa-compass"},
@@ -21,7 +25,9 @@ const BADGE_RULES = [
   {count:10, name:"金門之友",  icon:"fa-solid fa-wand-magic-sparkles"}
 ];
 
-/* ===== 分類徽章門檻 ===== */
+/* ===============================
+   分類徽章門檻
+   =============================== */
 const CAT_BADGE_RULES = {
   "在地文化":[{count:2,name:"在地文化入門",icon:"fa-solid fa-book-open"},{count:4,name:"在地文化巡禮",icon:"fa-solid fa-chess-rook"}],
   "戰地坑道":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
@@ -47,7 +53,9 @@ const CAT_BADGE_RULES = {
   "風獅爺":[{count:1,name:"風獅小行家",icon:"fa-solid fa-wind"},{count:3,name:"風獅守護者",icon:"fa-solid fa-dragon"}]
 };
 
-/* ===== 狀態 ===== */
+/* ===============================
+   狀態
+   =============================== */
 let DATA = [];
 let ITEM_BY_ID = {};
 let state = {
@@ -58,7 +66,9 @@ let state = {
   unlockedCatBadges: loadCatBadgeState()
 };
 
-/* ===== 徽章佇列 ===== */
+/* ===============================
+   徽章顯示佇列（避免多枚同時彈出）
+   =============================== */
 const badgeQueue = [];
 let isBadgeShowing = false;
 function enqueueBadge(icon, title, desc){ badgeQueue.push({icon, title, desc}); processBadgeQueue(); }
@@ -71,7 +81,9 @@ function processBadgeQueue(){
   el.addEventListener('hidden.bs.modal', once); modal.show();
 }
 
-/* ===== 啟動 ===== */
+/* ===============================
+   啟動流程
+   =============================== */
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const catalog = await loadCatalog();
@@ -94,7 +106,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-/* ===== 由 catalog 正規化 ===== */
+/* ===============================
+   由 catalog 正規化
+   =============================== */
 function buildDataFromCatalog(catalog){
   const seen = new Set(); let seq = 1;
   const normalize = (r) => {
@@ -125,7 +139,9 @@ function buildDataFromCatalog(catalog){
   }
 }
 
-/* ===== 地圖 ===== */
+/* ===============================
+   地圖
+   =============================== */
 let map, markers = {};
 function initMap(){
   map = L.map('map', {scrollWheelZoom:true}).setView([24.45,118.36], 11);
@@ -147,15 +163,20 @@ function flyToItem(item){
   }
 }
 
-/* ===== 類別篩選 UI ===== */
+/* ===============================
+   類別篩選 UI
+   =============================== */
 function renderCategoryFilters(){
   const $wrap = $("#catFilters").empty();
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
-  $wrap.append(`<span class="tag filter-pill active" data-cat="all"><i class="fa-solid fa-sliders"></i> 全部</span>`);
+  $wrap.append(`<span class="tag filter-pill active" data-cat="all"><i class="fa-solid fa-sliders"></i> 全部</span>`
+  );
   cats.forEach(c=> $wrap.append(`<span class="tag filter-pill" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</span>`));
 }
 
-/* ===== 產生清單 ===== */
+/* ===============================
+   產生清單
+   =============================== */
 function renderList(){
   const $list = $("#list").empty();
   const items = filtered().slice().sort((a,b)=>{
@@ -198,7 +219,9 @@ function renderList(){
   updateProgressBar();
 }
 
-/* ===== 篩選資料 ===== */
+/* ===============================
+   篩選資料
+   =============================== */
 function filtered(){
   const kw = state.kw.trim().toLowerCase();
   const cat = state.cat;
@@ -210,7 +233,9 @@ function filtered(){
   });
 }
 
-/* ===== 詳情 Modal ===== */
+/* ===============================
+   詳情 Modal
+   =============================== */
 function openItem(id){
   const it = ITEM_BY_ID[id]; if(!it) return;
   $("#mdTitle").text(it.name);
@@ -248,7 +273,9 @@ function openItem(id){
   flyToItem(it);
 }
 
-/* ===== 蒐集 + 徽章 ===== */
+/* ===============================
+   蒐集 + 徽章
+   =============================== */
 function toggleCollect(id){
   const item = ITEM_BY_ID[id]; if(!item) return;
   const cat = item.category;
@@ -272,7 +299,9 @@ function toggleCollect(id){
   }
 }
 
-/* ===== 儲存/載入 ===== */
+/* ===============================
+   儲存/載入
+   =============================== */
 function saveCollected(){ localStorage.setItem(LS_KEY, JSON.stringify([...state.collected])); renderProgress(); }
 function loadCollected(){ try{ const raw = localStorage.getItem(LS_KEY); return new Set(raw? JSON.parse(raw): []);}catch(e){ return new Set(); } }
 function loadBadgeState(){ try{ const raw = localStorage.getItem(LS_BADGE); return new Set(raw? JSON.parse(raw): []);}catch(e){ return new Set(); } }
@@ -293,7 +322,9 @@ function saveCatBadgeState(){
   localStorage.setItem(LS_BADGE_CAT, JSON.stringify(plain));
 }
 
-/* ===== 旅人報到 + 一致性校正 ===== */
+/* ===============================
+   旅人報到 + 一致性校正
+   =============================== */
 function ensureArrivalBadge(){
   if(!state.arrivalGranted){
     state.arrivalGranted = true; saveArrival(true);
@@ -306,7 +337,9 @@ function calibrateConsistency(){
   }
 }
 
-/* ===== 解鎖判斷 ===== */
+/* ===============================
+   解鎖判斷（全域 / 分類）
+   =============================== */
 function checkBadgeUnlock(beforeTotal, afterTotal){
   BADGE_RULES.forEach(b=>{
     const crossed = (beforeTotal < b.count && afterTotal >= b.count);
@@ -328,7 +361,9 @@ function checkCatBadgeUnlock(cat, before, after){
   });
 }
 
-/* ===== 進度/徽章（精簡顯示） ===== */
+/* ===============================
+   進度/徽章（精簡顯示列）
+   =============================== */
 function renderProgress(){
   $("#progressText").text(`${state.collected.size} / ${DATA.length}`);
   updateProgressBar();
@@ -363,7 +398,9 @@ function renderBadgesCompact(){
   });
 }
 
-/* ===== 事件綁定 ===== */
+/* ===============================
+   事件綁定
+   =============================== */
 function wireEvents(){
   $("#kw").on("input", function(){ state.kw = $(this).val(); renderList(); });
 
@@ -401,11 +438,13 @@ function wireEvents(){
   // 收合/展開按鈕狀態同步（Bootstrap 事件）
   setupBadgeToggleButton();
 
-  // sticky 高度校正
+  // sticky 高度校正（核心修正）
   setupStickyWatch();
 }
 
-/* ===== 收合按鈕狀態同步 ===== */
+/* ===============================
+   收合按鈕狀態同步（UI）
+   =============================== */
 function setupBadgeToggleButton(){
   const btn = document.getElementById("btnToggleBadges");
   const el  = document.getElementById("badgeCollapse");
@@ -427,7 +466,9 @@ function setupBadgeToggleButton(){
   }
 }
 
-/* ===== 全部徽章 Modal 內容 ===== */
+/* ===============================
+   全部徽章 Modal 內容
+   =============================== */
 function renderAllBadges(){
   const $g = $("#allBadgeGlobal").empty();
   BADGE_RULES.forEach(r=>{
@@ -453,7 +494,9 @@ function renderAllBadges(){
   });
 }
 
-/* ===== URL 掃碼集章 ===== */
+/* ===============================
+   URL 掃碼集章（?stamp=ID）
+   =============================== */
 function tryAutoStampFromURL(){
   const params = new URLSearchParams(location.search);
   const id = params.get("stamp"); if(!id) return;
@@ -471,7 +514,9 @@ function tryAutoStampFromURL(){
   }
 }
 
-/* ===== 小工具 ===== */
+/* ===============================
+   小工具
+   =============================== */
 function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m])); }
 function toast(msg){
   const id = "liveToast";
@@ -491,26 +536,39 @@ function countCollectedByCategory(cat){
   return n;
 }
 
-/* ===== Sticky 高度校正（無縫、單一實作） ===== */
+/* ===============================
+   Sticky 高度校正（核心修正）
+   - 精準量測各固定區塊實高（含 collapse 展開高度）
+   - 將總高度直接寫回 --headerTotal
+   - 以 window.innerHeight 寫回 --vh，避免 iOS 100vh 問題
+   =============================== */
 function setupStickyWatch(){
   const root = document.documentElement;
   let rafId = null;
 
   function setStickyVars(){
+    // 1) 用 innerHeight 修正 iOS 100vh：改寫 --vh
+    const vhPx = window.innerHeight;
+    root.style.setProperty('--vh', vhPx + 'px');
+
+    // 2) 精準量測固定區塊高度
     const nav  = document.getElementById('topNav');           // Navbar (sticky-top)
     const bar1 = document.querySelector('.subbar-1');         // 進度列
-    const bar2 = document.getElementById('badgeCollapse');    // 徽章收合區（可能為 0 高度）
-    const bar3 = document.querySelector('.subbar-3');         // 分類篩選
+    const bar2 = document.getElementById('badgeCollapse');    // 徽章收合區（收合時為 0）
+    const bar3 = document.querySelector('.subbar-3');         // 分類篩選列（HTML 已補 class）
 
     const navH  = nav  ? Math.round(nav.getBoundingClientRect().height)  : 56;
     const bar1H = bar1 ? Math.round(bar1.getBoundingClientRect().height) : 48;
     const bar2H = bar2 ? Math.round(bar2.getBoundingClientRect().height) : 0;
     const bar3H = bar3 ? Math.round(bar3.getBoundingClientRect().height) : 48;
 
+    // 3) Sticky 用到的 top 變數（避免初始 FOUC）
     root.style.setProperty('--navH',  navH  + 'px');
     root.style.setProperty('--bar1H', bar1H + 'px');
-    root.style.setProperty('--bar2H', bar2H + 'px');
-    root.style.setProperty('--bar3H', bar3H + 'px');
+
+    // 4) 主內容高度計算用的總和：直接回寫 --headerTotal
+    const total = navH + bar1H + bar2H + bar3H;
+    root.style.setProperty('--headerTotal', total + 'px');
   }
 
   const schedule = ()=> {
@@ -518,12 +576,18 @@ function setupStickyWatch(){
     rafId = requestAnimationFrame(()=>{ rafId = null; setStickyVars(); });
   };
 
+  // 初始／resize 時重算
   window.addEventListener('load', setStickyVars);
   window.addEventListener('resize', schedule);
 
-  // Bootstrap Collapse 高度變化時重新量測，避免露縫/閃爍
-  document.addEventListener('show.bs.collapse', schedule);
-  document.addEventListener('shown.bs.collapse', schedule);
-  document.addEventListener('hide.bs.collapse', schedule);
-  document.addEventListener('hidden.bs.collapse', schedule);
+  // 監聽 Bootstrap collapse 展開/收合與動畫完成
+  ['show.bs.collapse','shown.bs.collapse','hide.bs.collapse','hidden.bs.collapse']
+    .forEach(ev => document.addEventListener(ev, schedule));
+  const badgeCollapseEl = document.getElementById('badgeCollapse');
+  if (badgeCollapseEl) {
+    badgeCollapseEl.addEventListener('transitionend', schedule, true);
+  }
+
+  // 搜尋框輸入（高度變化通常很小，但保守處理一次）
+  document.getElementById('kw')?.addEventListener('input', schedule);
 }
