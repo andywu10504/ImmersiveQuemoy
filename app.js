@@ -26,7 +26,7 @@ const BADGE_RULES = [
 ];
 
 /* ===============================
-   分類徽章門檻（保留你的版本）
+   分類徽章門檻
    =============================== */
 const CAT_BADGE_RULES = {
   "在地文化": [
@@ -126,13 +126,13 @@ let ITEM_BY_ID = {};
 let state = {
   kw: "", cat: "all",
   collected: loadCollected(),
-  unlockedBadges: loadBadgeState(),     // 這裡存的是全域門檻的「count」集合
+  unlockedBadges: loadBadgeState(),     // 全域門檻 count 集合
   arrivalGranted: loadArrival(),        // 旅人報到
   unlockedCatBadges: loadCatBadgeState()// { [cat]: Set(count) }
 };
 
 /* ===============================
-   徽章顯示佇列（避免多枚同時彈出）
+   徽章顯示佇列
    =============================== */
 const badgeQueue = [];
 let isBadgeShowing = false;
@@ -477,10 +477,30 @@ function renderBadgesCompact(){
     const got = countCollectedByCategory(cat);
     const sum = DATA.filter(d=>d.category===cat).length;
     const best = getBestCategoryBadge(cat, got);
+
+    // ★ 特例：傳統點心 —— 只顯示「點心入門（1/5）」這樣的格式（不加分類名）
+    if (cat === "傳統點心" && best){
+      $row.append(
+        `<span class="badge-chip badge-strong" title="${cat} ${got}/${sum}">
+           <i class="${best.icon}"></i> ${best.name}（${got}/${sum}）
+         </span>`
+      );
+      return;
+    }
+
+    // 其他分類：仍顯示「分類：等級名」；若尚未達成，顯示進度
     if(best){
-      $row.append(`<span class="badge-chip badge-strong" title="${cat} ${got}/${sum}"><i class="${best.icon}"></i> ${cat}：${best.name}</span>`);
+      $row.append(
+        `<span class="badge-chip badge-strong" title="${cat} ${got}/${sum}">
+           <i class="${best.icon}"></i> ${cat}：${best.name}
+         </span>`
+      );
     }else{
-      $row.append(`<span class="badge-chip" title="${cat} ${got}/${sum}"><i class="fa-regular fa-bookmark"></i> ${cat} ${got}/${sum}</span>`);
+      $row.append(
+        `<span class="badge-chip" title="${cat} ${got}/${sum}">
+           <i class="fa-regular fa-bookmark"></i> ${cat} ${got}/${sum}
+         </span>`
+      );
     }
   });
 }
@@ -520,7 +540,10 @@ function wireEvents(){
   $("#list").on("click",".btn-collect", function(){ const id=$(this).data("id"); toggleCollect(id); renderList(); renderBadgesCompact(); });
   $("#list").on("click",".btn-locate", function(){ const it=ITEM_BY_ID[$(this).data("id")]; if(it){ flyToItem(it); openItem(it.id); } });
 
-  $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
+  $("#btnAllBadges").on("click", ()=>{
+    renderAllBadges();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show();
+  });
 
   setupBadgeToggleButton();
   setupStickyWatch();
