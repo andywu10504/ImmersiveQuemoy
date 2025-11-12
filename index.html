@@ -65,78 +65,9 @@
       display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.15em;font-size:.9rem;
       transform: rotate(-12deg) scale(0);opacity:0;background: rgba(214,51,108,.06);pointer-events:none;
     }
-/* ========== Stamp 強化動畫：墨水擴散 + 彈跳 + 粒子 ========== */
-
-/* 章面（原本就有），補上更順的入場與輕微晃動 */
-.card.collected .stamp {
-  transform: rotate(-12deg) scale(1);
-  opacity: .92;
-  transition: transform .25s ease, opacity .25s ease;
-}
-@keyframes stampIn {
-  0%   { transform: rotate(-12deg) scale(.1); opacity:.0; }
-  55%  { transform: rotate(-12deg) scale(1.18); opacity:1; }
-  80%  { transform: rotate(-12deg) scale(.98); }
-  100% { transform: rotate(-12deg) scale(1);   opacity:.92; }
-}
-@keyframes stampWobble {
-  0% { transform: rotate(-12deg) translate(0,0); }
-  25%{ transform: rotate(-10deg) translate(1px,-1px); }
-  50%{ transform: rotate(-13deg) translate(-1px,1px); }
-  75%{ transform: rotate(-11deg) translate(1px,1px); }
-  100%{transform: rotate(-12deg) translate(0,0); }
-}
-.stamp.punch {
-  animation: stampIn .42s cubic-bezier(.2,1,.2,1), stampWobble .36s ease .42s;
-}
-
-/* 墨水擴散（在 stamp 後面鋪一層柔和的墨暈） */
-.stamp-ink {
-  position: absolute;
-  right: .5rem; bottom: .5rem;
-  width: 78px; height: 78px;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center,
-              rgba(214,51,108,.24) 0%,
-              rgba(214,51,108,.12) 55%,
-              rgba(214,51,108,0) 70%);
-  transform: scale(.3);
-  opacity: 0;
-}
-.stamp-ink.show {
-  animation: inkSpread .6s ease-out forwards;
-}
-@keyframes inkSpread {
-  0%   { transform: scale(.3); opacity: 0; }
-  40%  { transform: scale(1.15); opacity: .5; }
-  100% { transform: scale(1.35); opacity: 0; }
-}
-
-/* 粒子爆破（環形 10 顆小點向外散開再消失） */
-.stamp-burst {
-  position: absolute;
-  right:.5rem; bottom:.5rem;
-  width: 78px; height: 78px;
-  pointer-events: none;
-}
-.stamp-burst .dot {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 6px; height: 6px;
-  margin: -3px 0 0 -3px;
-  border-radius: 50%;
-  background: #d6336c;
-  opacity: 0;
-  transform: translate(0,0) scale(.6);
-  filter: drop-shadow(0 0 4px rgba(214,51,108,.45));
-}
-@keyframes burstOut {
-  0%   { opacity: 0; transform: translate(0,0) scale(.4); }
-  15%  { opacity: 1; transform: translate(0,0) scale(1); }
-  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(.9); }
-}
-
+    .card.collected .stamp{transform: rotate(-12deg) scale(1);opacity:.92;transition: transform .25s ease, opacity .25s ease;}
+    @keyframes stampIn {0%{transform: rotate(-12deg) scale(.1);opacity:.0;}60%{transform: rotate(-12deg) scale(1.15);opacity:1;}100%{transform: rotate(-12deg) scale(1);opacity:.92;}}
+    .stamp.punch{animation: stampIn .38s cubic-bezier(.2,1,.2,1);}
 
     .badge-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:999px;font-weight:600;border:1px solid #dee2e6;background:#fff;color:#495057;}
     .badge-strong{background:#198754;color:#fff;border-color:#198754;}
