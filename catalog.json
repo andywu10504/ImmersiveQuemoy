@@ -57,8 +57,8 @@
   { "id":"F_M_ManJianGao","name":"滿煎糕","category":"在地美食","tags":["點心"],"address":"多店家","desc":"外酥內柔，甜香滿溢。","quests":["拍剖面","寫 1 句評語"] },
   { "id":"F_M_GaoliangEgg","name":"高粱酒釀蛋","category":"在地美食","tags":["酒香","蛋"],"address":"多店家","desc":"酒香浸潤的蛋料理。","quests":["拍成品","寫 20 字感受"] },
   { "id":"F_M_ShanxiNoodle","name":"山西拌麵","category":"在地美食","tags":["拌麵","地域風味"],"address":"多店家","desc":"麵香與醬香的直球對決。","quests":["拍拌勻前後","寫 20 字口味"] },
-
-  { "id":"D_Bafenpu","name":"八分舖","category":"在地飲品","tags":["在地飲品"],"address":"多店家","desc":"在地常見飲品品牌（據點依實際）。","quests":["拍杯身設計","寫 3 個風味詞"] },
+  
+  { "id":"D_Bafenpu","name":"八分舖","category":"在地飲品","tags":["在地飲品"],"lat":24.438863259996463,"lng":118.31872745703723,"address":"多店家","desc":"在地常見飲品品牌。","quests":["拍杯身設計","寫 3 個風味詞"] },
   { "id":"D_Gaoming","name":"高明綠豆沙","category":"在地飲品","tags":["冰飲","豆沙"],"lat":24.442045793617677,"lng":118.41510468019536,"address":"高明照相館","desc":"綠豆沙香濃冰涼，沁心消暑。","quests":["拍杯身與綿密度","評分 1–5"] },
   
   { "id":"S_Gaoliang","name":"高粱酒","category":"金門名產","tags":["釀造","經典"],"address":"多店家","desc":"最具代表性的金門名產之一。","quests":["拍酒標","寫 3 個香氣詞"] },
