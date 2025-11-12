@@ -26,7 +26,7 @@ const BADGE_RULES = [
 ];
 
 /* ===============================
-   分類徽章門檻
+   分類徽章門檻（全部使用 FA Free 有的圖示）
    =============================== */
 const CAT_BADGE_RULES = {
   "在地文化": [
@@ -34,12 +34,12 @@ const CAT_BADGE_RULES = {
     { count: 4, name: "金門學家", icon: "fa-solid fa-chess-rook" }
   ],
   "戰地坑道": [
-    { count: 1, name: "坑道初探", icon: "fa-solid fa-person-digging" },      // 替代 fa-tunnel
-    { count: 2, name: "坑道通",   icon: "fa-solid fa-person-hiking" }        // 替代 fa-person-walking
+    { count: 1, name: "坑道初探", icon: "fa-solid fa-person-digging" },
+    { count: 2, name: "坑道通",   icon: "fa-solid fa-person-hiking" }
   ],
   "防禦工事": [
     { count: 2, name: "防禦入門", icon: "fa-solid fa-shield-halved" },
-    { count: 4, name: "防禦巡禮", icon: "fa-brands fa-fort-awesome" }       // Brands（Free）
+    { count: 4, name: "防禦巡禮", icon: "fa-brands fa-fort-awesome" }  // Brands 但 Free
   ],
   "營區": [
     { count: 1, name: "營區初探", icon: "fa-solid fa-tent" },
@@ -59,7 +59,7 @@ const CAT_BADGE_RULES = {
   ],
   "心戰設施": [
     { count: 1, name: "心戰印記", icon: "fa-solid fa-bullhorn" },
-    { count: 2, name: "心戰通",   icon: "fa-solid fa-radio" }               // 替代 fa-tower-broadcast
+    { count: 2, name: "心戰通",   icon: "fa-solid fa-tower-broadcast" } // 取代 fa-radio
   ],
   "太武山": [
     { count: 1, name: "太武初遇", icon: "fa-solid fa-mountain" },
@@ -75,17 +75,17 @@ const CAT_BADGE_RULES = {
   ],
   "特約茶室": [
     { count: 1, name: "特約入門", icon: "fa-solid fa-martini-glass" },
-    { count: 2, name: "特約知行", icon: "fa-solid fa-landmark" }            // 保險替代 landmark-dome
+    { count: 2, name: "特約知行", icon: "fa-solid fa-landmark" }
   ],
   "戰時文化": [
     { count: 1, name: "戰時印記",  icon: "fa-solid fa-helmet-safety" },
-    { count: 2, name: "戰時通識",  icon: "fa-solid fa-shield" }             // 替代 fa-shield-virus
+    { count: 2, name: "戰時通識",  icon: "fa-solid fa-shield" }
   ],
   "地形樣態": [
     { count: 1, name: "潮汐行者", icon: "fa-solid fa-water" }
   ],
   "戰地史料": [
-    { count: 1, name: "戰史入門", icon: "fa-solid fa-landmark" },           // 替代 fa-landmark-dome
+    { count: 1, name: "戰史入門", icon: "fa-solid fa-landmark" },
     { count: 2, name: "戰史達人", icon: "fa-solid fa-book" }
   ],
   "書院": [
@@ -93,7 +93,7 @@ const CAT_BADGE_RULES = {
     { count: 2, name: "書院通",   icon: "fa-solid fa-feather-pointed" }
   ],
   "沙灘": [
-    { count: 1, name: "海風初見",    icon: "fa-solid fa-umbrella" },        // 替代 fa-umbrella-beach
+    { count: 1, name: "海風初見",    icon: "fa-solid fa-umbrella" },
     { count: 2, name: "海灘守護者", icon: "fa-solid fa-recycle" }
   ],
   "在地美食": [
@@ -102,7 +102,7 @@ const CAT_BADGE_RULES = {
   ],
   "在地飲品": [
     { count: 1, name: "在地飲品入門", icon: "fa-solid fa-mug-hot" },
-    { count: 3, name: "在地飲品達人", icon: "fa-solid fa-mug-saucer" }      // 替代 fa-martini-glass-citrus
+    { count: 3, name: "在地飲品達人", icon: "fa-solid fa-mug-saucer" }
   ],
   "金門名產": [
     { count: 2, name: "名產入門",   icon: "fa-solid fa-store" },
@@ -234,8 +234,7 @@ function flyToItem(item){
 function renderCategoryFilters(){
   const $wrap = $("#catFilters").empty();
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
-  $wrap.append(`<span class="tag filter-pill active" data-cat="all"><i class="fa-solid fa-sliders"></i> 全部</span>`
-  );
+  $wrap.append(`<span class="tag filter-pill active" data-cat="all"><i class="fa-solid fa-sliders"></i> 全部</span>`);
   cats.forEach(c=> $wrap.append(`<span class="tag filter-pill" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</span>`));
 }
 
@@ -428,6 +427,7 @@ function checkCatBadgeUnlock(cat, before, after){
 
 /* ===============================
    進度/徽章（精簡顯示列）
+   - 需求：展開徽章只要完成就顯示「最高級別」的全域徽章
    =============================== */
 function renderProgress(){
   $("#progressText").text(`${state.collected.size} / ${DATA.length}`);
@@ -441,9 +441,12 @@ function renderBadgesCompact(){
   const $row = $("#badgesRow").empty();
   const total = state.collected.size;
 
+  // 旅人報到不要出現在「查看全部徽章」，但在這裡仍可作為 chip 顯示（若你不想顯示，註解掉下面兩行即可）
   if(state.arrivalGranted){
     $row.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
   }
+
+  // 僅顯示最高等級已解鎖的全域徽章（若尚未達到任何門檻，顯示下一個目標）
   let best = null;
   for(const rule of BADGE_RULES.slice().sort((a,b)=>b.count-a.count)){
     if(total >= rule.count){ best = rule; break; }
@@ -455,6 +458,7 @@ function renderBadgesCompact(){
     $row.append(`<span class="badge-chip badge-muted"><i class="${next.icon}"></i> 再蒐集 ${next.count - total} 個解鎖「${next.name}」</span>`);
   }
 
+  // 類別進度小貼紙
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
   cats.forEach(cat=>{
     const got = countCollectedByCategory(cat);
@@ -486,7 +490,7 @@ function wireEvents(){
     state.unlockedCatBadges = {};
     saveCollected(); saveBadgeState(); saveCatBadgeState();
 
-    state.arrivalGranted = false; 
+    state.arrivalGranted = false;
     saveArrival(false);
     ensureArrivalBadge();
 
@@ -500,10 +504,7 @@ function wireEvents(){
 
   $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
 
-  // 收合/展開按鈕狀態同步（Bootstrap 事件）
   setupBadgeToggleButton();
-
-  // sticky 高度校正（核心修正）
   setupStickyWatch();
 }
 
@@ -514,9 +515,7 @@ function setupBadgeToggleButton(){
   const btn = document.getElementById("btnToggleBadges");
   const el  = document.getElementById("badgeCollapse");
 
-  // 初始依據是否有 show 來設定
   setBadgeToggleUI(el.classList.contains('show'));
-
   el.addEventListener("shown.bs.collapse", ()=> setBadgeToggleUI(true));
   el.addEventListener("hidden.bs.collapse", ()=> setBadgeToggleUI(false));
 
@@ -532,7 +531,7 @@ function setupBadgeToggleButton(){
 }
 
 /* ===============================
-   全部徽章 Modal 內容
+   全部徽章 Modal 內容（不包含旅人報到）
    =============================== */
 function renderAllBadges(){
   const $g = $("#allBadgeGlobal").empty();
@@ -602,36 +601,29 @@ function countCollectedByCategory(cat){
 }
 
 /* ===============================
-   Sticky 高度校正（核心修正）
-   - 精準量測各固定區塊實高（含 collapse 展開高度）
-   - 將總高度直接寫回 --headerTotal
-   - 以 window.innerHeight 寫回 --vh，避免 iOS 100vh 問題
+   Sticky 高度校正
    =============================== */
 function setupStickyWatch(){
   const root = document.documentElement;
   let rafId = null;
 
   function setStickyVars(){
-    // 1) 用 innerHeight 修正 iOS 100vh：改寫 --vh
     const vhPx = window.innerHeight;
     root.style.setProperty('--vh', vhPx + 'px');
 
-    // 2) 精準量測固定區塊高度
-    const nav  = document.getElementById('topNav');           // Navbar (sticky-top)
-    const bar1 = document.querySelector('.subbar-1');         // 進度列
-    const bar2 = document.getElementById('badgeCollapse');    // 徽章收合區（收合時為 0）
-    const bar3 = document.querySelector('.subbar-3');         // 分類篩選列（HTML 已補 class）
+    const nav  = document.getElementById('topNav');
+    const bar1 = document.querySelector('.subbar-1');
+    const bar2 = document.getElementById('badgeCollapse');
+    const bar3 = document.querySelector('.subbar-3');
 
     const navH  = nav  ? Math.round(nav.getBoundingClientRect().height)  : 56;
     const bar1H = bar1 ? Math.round(bar1.getBoundingClientRect().height) : 48;
     const bar2H = bar2 ? Math.round(bar2.getBoundingClientRect().height) : 0;
     const bar3H = bar3 ? Math.round(bar3.getBoundingClientRect().height) : 48;
 
-    // 3) Sticky 用到的 top 變數（避免初始 FOUC）
     root.style.setProperty('--navH',  navH  + 'px');
     root.style.setProperty('--bar1H', bar1H + 'px');
 
-    // 4) 主內容高度計算用的總和：直接回寫 --headerTotal
     const total = navH + bar1H + bar2H + bar3H;
     root.style.setProperty('--headerTotal', total + 'px');
   }
@@ -641,12 +633,10 @@ function setupStickyWatch(){
     rafId = requestAnimationFrame(()=>{ rafId = null; setStickyVars(); });
   };
 
-  // 初始／resize 時重算
   window.addEventListener('load', setStickyVars);
   window.addEventListener('resize', schedule);
-   setStickyVars(); // 先立即量測一次，避免首屏高度誤差
+  setStickyVars();
 
-  // 監聽 Bootstrap collapse 展開/收合與動畫完成
   ['show.bs.collapse','shown.bs.collapse','hide.bs.collapse','hidden.bs.collapse']
     .forEach(ev => document.addEventListener(ev, schedule));
   const badgeCollapseEl = document.getElementById('badgeCollapse');
@@ -654,6 +644,5 @@ function setupStickyWatch(){
     badgeCollapseEl.addEventListener('transitionend', schedule, true);
   }
 
-  // 搜尋框輸入（高度變化通常很小，但保守處理一次）
   document.getElementById('kw')?.addEventListener('input', schedule);
 }
