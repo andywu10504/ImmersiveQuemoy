@@ -126,13 +126,13 @@ let ITEM_BY_ID = {};
 let state = {
   kw: "", cat: "all",
   collected: loadCollected(),
-  unlockedBadges: loadBadgeState(),     // 全域門檻 count 集合
+  unlockedBadges: loadBadgeState(),     // 全域門檻的「count」集合
   arrivalGranted: loadArrival(),        // 旅人報到
   unlockedCatBadges: loadCatBadgeState()// { [cat]: Set(count) }
 };
 
 /* ===============================
-   徽章顯示佇列
+   徽章顯示佇列（避免多枚同時彈出）
    =============================== */
 const badgeQueue = [];
 let isBadgeShowing = false;
@@ -156,13 +156,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     DATA = built.DATA; ITEM_BY_ID = built.ITEM_BY_ID;
 
     renderCategoryFilters();
-    ensureArrivalBadge();
+    ensureArrivalBadge();      // 先處理旅人報到
     calibrateConsistency();
     initMap();
 
     renderList();
     renderProgress();
-    renderBadgesCompact();     // 展開徽章列（最高級別 + 進度）
+    renderBadgesCompact();     // 展開徽章列（最高級別 + 進度字樣）
     wireEvents();
     tryAutoStampFromURL();
   } catch (err) {
@@ -197,7 +197,7 @@ function buildDataFromCatalog(catalog){
 
   function autoId(cat, i){
     const map = {"坑道":"K","戰史館":"W","據點":"G","海灘":"B","碉堡":"F","地標":"L","步道":"T","體驗":"Q",
-      "在地文化":"C","在地美食":"M","在地飲品":"D","金門名產":"S","傳統點心":"Tn","特色風狮爺":"Ls"};
+      "在地文化":"C","在地美食":"M","在地飲品":"D","金門名產":"S","傳統點心":"Tn","特色風獅爺":"Ls"};
     const p = (map[cat] || "X");
     const n = String(i).padStart(3,"0");
     return p + n;
@@ -426,7 +426,7 @@ function checkCatBadgeUnlock(cat, before, after){
 }
 
 /* ===============================
-   進度/徽章（精簡顯示列）— 顯示最高級別
+   進度/徽章（精簡顯示列：顯示最高級別 + 進度）
    =============================== */
 function renderProgress(){
   $("#progressText").text(`${state.collected.size} / ${DATA.length}`);
@@ -457,31 +457,40 @@ function renderBadgesCompact(){
   const $row = $("#badgesRow").empty();
   const total = state.collected.size;
 
-  // 旅人報到
+  // 旅人報到（若已發放）
   if(state.arrivalGranted){
     $row.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
   }
 
-  // 全域最高級別徽章（加總進度）
+  // 全域最高級別徽章
   const bestGlobal = getBestGlobalBadge(total);
   if(bestGlobal){
-    $row.append(`<span class="badge-chip badge-strong"><i class="${bestGlobal.icon}"></i> ${bestGlobal.name}(${total}/${DATA.length})</span>`);
+    $row.append(`<span class="badge-chip badge-strong"><i class="${bestGlobal.icon}"></i> ${bestGlobal.name}</span>`);
   }else{
     const next = BADGE_RULES[0];
     $row.append(`<span class="badge-chip badge-muted"><i class="${next.icon}"></i> 再蒐集 ${next.count - total} 個解鎖「${next.name}」</span>`);
   }
 
-  // 各分類最高級別徽章：只顯示「徽章名稱(已集/總)」
+  // 各分類：若已解鎖任何門檻 → 顯示「最高徽章名 + 進度 got/sum」
+  // 否則 → 顯示「分類名稱 + 進度」
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
   cats.forEach(cat=>{
     const got = countCollectedByCategory(cat);
     const sum = DATA.filter(d=>d.category===cat).length;
     const best = getBestCategoryBadge(cat, got);
+
     if(best){
-      $row.append(`<span class="badge-chip badge-strong" title="${cat} ${got}/${sum}"><i class="${best.icon}"></i> ${best.name}(${got}/${sum})</span>`);
+      // 例：點心入門 1/5
+      $row.append(
+        `<span class="badge-chip badge-strong" title="${cat} ${got}/${sum}">
+           <i class="${best.icon}"></i> ${best.name} ${got}/${sum}
+         </span>`);
     }else{
-      // 尚未達到任何門檻 → 顯示純進度
-      $row.append(`<span class="badge-chip" title="${cat} ${got}/${sum}"><i class="fa-regular fa-bookmark"></i> ${got}/${sum}</span>`);
+      // 尚未解鎖任何門檻 → 顯示分類名稱 + 進度
+      $row.append(
+        `<span class="badge-chip" title="${cat} ${got}/${sum}">
+           <i class="fa-regular fa-bookmark"></i> ${cat} ${got}/${sum}
+         </span>`);
     }
   });
 }
@@ -521,7 +530,10 @@ function wireEvents(){
   $("#list").on("click",".btn-collect", function(){ const id=$(this).data("id"); toggleCollect(id); renderList(); renderBadgesCompact(); });
   $("#list").on("click",".btn-locate", function(){ const it=ITEM_BY_ID[$(this).data("id")]; if(it){ flyToItem(it); openItem(it.id); } });
 
-  $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
+  $("#btnAllBadges").on("click", ()=>{
+    renderAllBadges();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show();
+  });
 
   setupBadgeToggleButton();
   setupStickyWatch();
@@ -562,7 +574,6 @@ function renderAllBadges(){
     $g.append(`<span class="badge-chip ${unlocked?'badge-strong':''}"><i class="${r.icon}"></i> ${r.name}（≥${r.count}）</span>`);
   });
 
-  // 分類區
   const $cWrap = $("#allBadgeCats").empty();
   const cats = Object.keys(CAT_BADGE_RULES);
   cats.forEach(cat=>{
@@ -624,7 +635,7 @@ function countCollectedByCategory(cat){
 }
 
 /* ===============================
-   Sticky 高度校正
+   Sticky 高度校正（核心修正）
    =============================== */
 function setupStickyWatch(){
   const root = document.documentElement;
