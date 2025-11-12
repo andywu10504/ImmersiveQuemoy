@@ -33,10 +33,10 @@ const CAT_BADGE_RULES = {
   "戰地坑道":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
   "防禦工事":[{count:2, name:"防禦入門", icon:"fa-solid fa-shield-halved"},  {count:4, name:"防禦巡禮", icon:"fa-solid fa-fort-awesome"}],
   "營區":[{count:1, name:"營區初探", icon:"fa-solid fa-tent"},  {count:3, name:"營區達人", icon:"fa-solid fa-helmet-safety"}],
-  "金門日常":[{count:1,name:"坑道初探",icon:"fa-solid fa-tunnel"},{count:2,name:"坑道通",icon:"fa-solid fa-person-walking"}],
+  "金門日常":[{count:1, name:"日常初見", icon:"fa-solid fa-mug-hot"},{count:2, name:"日常通",   icon:"fa-solid fa-bicycle"}],
   "洋樓建築":[{count:1,name:"洋樓入門",icon:"fa-solid fa-building-columns"},{count:2,name:"洋樓達人",icon:"fa-solid fa-landmark"}],
   "碉堡":[{count:2,name:"碉堡入門",icon:"fa-solid fa-shield-halved"},{count:4,name:"碉堡巡禮",icon:"fa-solid fa-shield"}],
-  "播音牆":[{count:1,name:"心戰印記",icon:"fa-solid fa-bullhorn"},{count:2,name:"播音牆通",icon:"fa-solid fa-tower-broadcast"}],
+  "心戰設施":[{count:1,name:"心戰印記",icon:"fa-solid fa-bullhorn"},{count:2,name:"心戰通",icon:"fa-solid fa-tower-broadcast"}],
   "太武山":[{count:1,name:"太武初遇",icon:"fa-solid fa-mountain"},{count:2,name:"太武巡禮",icon:"fa-solid fa-person-hiking"}],
   "閩南建築(古厝)":[{count:1,name:"古厝入門",icon:"fa-solid fa-house-chimney"},{count:2,name:"古厝達人",icon:"fa-solid fa-chess-rook"}],
   "濕地":[{count:1,name:"濕地初探",icon:"fa-solid fa-water"},{count:2,name:"濕地守護者",icon:"fa-solid fa-recycle"}],
@@ -579,6 +579,7 @@ function setupStickyWatch(){
   // 初始／resize 時重算
   window.addEventListener('load', setStickyVars);
   window.addEventListener('resize', schedule);
+   setStickyVars(); // 先立即量測一次，避免首屏高度誤差
 
   // 監聽 Bootstrap collapse 展開/收合與動畫完成
   ['show.bs.collapse','shown.bs.collapse','hide.bs.collapse','hidden.bs.collapse']
