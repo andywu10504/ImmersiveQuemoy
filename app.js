@@ -1,3 +1,4 @@
+<script>
 /* ===============================
    讀取目錄資料（從 catalog.json）
    =============================== */
@@ -26,7 +27,7 @@ const BADGE_RULES = [
 ];
 
 /* ===============================
-   分類徽章門檻
+   分類徽章門檻（保留你的版本）
    =============================== */
 const CAT_BADGE_RULES = {
   "在地文化": [
@@ -126,13 +127,13 @@ let ITEM_BY_ID = {};
 let state = {
   kw: "", cat: "all",
   collected: loadCollected(),
-  unlockedBadges: loadBadgeState(),
-  arrivalGranted: loadArrival(),
-  unlockedCatBadges: loadCatBadgeState()
+  unlockedBadges: loadBadgeState(),     // 這裡存的是全域門檻的「count」集合
+  arrivalGranted: loadArrival(),        // 旅人報到
+  unlockedCatBadges: loadCatBadgeState()// { [cat]: Set(count) }
 };
 
 /* ===============================
-   徽章顯示佇列
+   徽章顯示佇列（避免多枚同時彈出）
    =============================== */
 const badgeQueue = [];
 let isBadgeShowing = false;
@@ -156,13 +157,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     DATA = built.DATA; ITEM_BY_ID = built.ITEM_BY_ID;
 
     renderCategoryFilters();
-    ensureArrivalBadge();
+    ensureArrivalBadge();      // 先處理旅人報到
     calibrateConsistency();
     initMap();
 
     renderList();
     renderProgress();
-    renderBadgesCompact();
+    renderBadgesCompact();     // 展開徽章列（最高級別）
     wireEvents();
     tryAutoStampFromURL();
   } catch (err) {
@@ -426,7 +427,7 @@ function checkCatBadgeUnlock(cat, before, after){
 }
 
 /* ===============================
-   進度/徽章（精簡顯示列）
+   進度/徽章（精簡顯示列）— 顯示最高級別徽章
    =============================== */
 function renderProgress(){
   $("#progressText").text(`${state.collected.size} / ${DATA.length}`);
@@ -437,35 +438,51 @@ function updateProgressBar(){
   $("#progressBar").css("width", pct+"%").text(pct+"%");
 }
 
-function renderBadgesCompact(){
-  const $row = $("#badgesRow").empty();
-  const total = state.collected.size;
-  const expanded = document.getElementById('badgeCollapse')?.classList.contains('show');
-
-  // 旅人報到
-  if(state.arrivalGranted){
-    $row.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
-  }
-
-  // 全域最高級別（若已蒐集到任何點）
+function getBestGlobalBadge(total){
   let best = null;
   for(const rule of BADGE_RULES.slice().sort((a,b)=>b.count-a.count)){
     if(total >= rule.count){ best = rule; break; }
   }
-  if(best){
-    $row.append(`<span class="badge-chip badge-strong"><i class="${best.icon}"></i> ${best.name}</span>`);
-  }else if(!expanded){
-    // 尚未解任何全域徽章：收合狀態才提示下一級（展開時不顯示提示）
+  return best;
+}
+function getBestCategoryBadge(cat, got){
+  const rules = CAT_BADGE_RULES[cat] || [];
+  let best = null;
+  for(const r of rules.slice().sort((a,b)=>b.count-a.count)){
+    if(got >= r.count){ best = r; break; }
+  }
+  return best;
+}
+
+function renderBadgesCompact(){
+  const $row = $("#badgesRow").empty();
+  const total = state.collected.size;
+
+  // 旅人報到（若已發放）
+  if(state.arrivalGranted){
+    $row.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
+  }
+
+  // 全域最高級別徽章
+  const bestGlobal = getBestGlobalBadge(total);
+  if(bestGlobal){
+    $row.append(`<span class="badge-chip badge-strong"><i class="${bestGlobal.icon}"></i> ${bestGlobal.name}</span>`);
+  }else{
     const next = BADGE_RULES[0];
     $row.append(`<span class="badge-chip badge-muted"><i class="${next.icon}"></i> 再蒐集 ${next.count - total} 個解鎖「${next.name}」</span>`);
   }
 
-  // 每一類別進度
+  // 各分類最高級別徽章（或顯示進度）
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
   cats.forEach(cat=>{
     const got = countCollectedByCategory(cat);
     const sum = DATA.filter(d=>d.category===cat).length;
-    $row.append(`<span class="badge-chip" title="${cat} ${got}/${sum}"><i class="fa-regular fa-bookmark"></i> ${cat} ${got}/${sum}</span>`);
+    const best = getBestCategoryBadge(cat, got);
+    if(best){
+      $row.append(`<span class="badge-chip badge-strong" title="${cat} ${got}/${sum}"><i class="${best.icon}"></i> ${cat}：${best.name}</span>`);
+    }else{
+      $row.append(`<span class="badge-chip" title="${cat} ${got}/${sum}"><i class="fa-regular fa-bookmark"></i> ${cat} ${got}/${sum}</span>`);
+    }
   });
 }
 
@@ -492,7 +509,7 @@ function wireEvents(){
     state.unlockedCatBadges = {};
     saveCollected(); saveBadgeState(); saveCatBadgeState();
 
-    state.arrivalGranted = false;
+    state.arrivalGranted = false; 
     saveArrival(false);
     ensureArrivalBadge();
 
@@ -504,10 +521,7 @@ function wireEvents(){
   $("#list").on("click",".btn-collect", function(){ const id=$(this).data("id"); toggleCollect(id); renderList(); renderBadgesCompact(); });
   $("#list").on("click",".btn-locate", function(){ const it=ITEM_BY_ID[$(this).data("id")]; if(it){ flyToItem(it); openItem(it.id); } });
 
-  $("#btnAllBadges").on("click", ()=>{
-    renderAllBadges();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show();
-  });
+  $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
 
   setupBadgeToggleButton();
   setupStickyWatch();
@@ -519,18 +533,9 @@ function wireEvents(){
 function setupBadgeToggleButton(){
   const btn = document.getElementById("btnToggleBadges");
   const el  = document.getElementById("badgeCollapse");
-
   setBadgeToggleUI(el.classList.contains('show'));
-
-  el.addEventListener("shown.bs.collapse", ()=>{
-    setBadgeToggleUI(true);
-    renderBadgesCompact(); // 展開時重新渲染（隱藏灰色提示）
-  });
-  el.addEventListener("hidden.bs.collapse", ()=>{
-    setBadgeToggleUI(false);
-    renderBadgesCompact(); // 收合時重新渲染（顯示灰色提示）
-  });
-
+  el.addEventListener("shown.bs.collapse", ()=> setBadgeToggleUI(true));
+  el.addEventListener("hidden.bs.collapse", ()=> setBadgeToggleUI(false));
   function setBadgeToggleUI(expanded){
     if(expanded){
       btn.innerHTML = '<i class="fa-solid fa-chevron-up me-1"></i> 收合徽章';
@@ -543,18 +548,15 @@ function setupBadgeToggleButton(){
 }
 
 /* ===============================
-   全部徽章 Modal 內容
+   全部徽章 Modal 內容（全域加上「旅人報到」）
    =============================== */
 function renderAllBadges(){
   const $g = $("#allBadgeGlobal").empty();
 
-  // 旅人報到也列入全域清單
-  if(state.arrivalGranted){
-    $g.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
-  }else{
-    $g.append(`<span class="badge-chip"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
-  }
+  // 旅人報到
+  $g.append(`<span class="badge-chip ${state.arrivalGranted?'badge-strong':''}"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
 
+  // 其他全域徽章
   BADGE_RULES.forEach(r=>{
     const unlocked = state.collected.size >= r.count;
     $g.append(`<span class="badge-chip ${unlocked?'badge-strong':''}"><i class="${r.icon}"></i> ${r.name}（≥${r.count}）</span>`);
@@ -621,7 +623,7 @@ function countCollectedByCategory(cat){
 }
 
 /* ===============================
-   Sticky 高度校正
+   Sticky 高度校正（核心修正）
    =============================== */
 function setupStickyWatch(){
   const root = document.documentElement;
@@ -643,8 +645,6 @@ function setupStickyWatch(){
 
     root.style.setProperty('--navH',  navH  + 'px');
     root.style.setProperty('--bar1H', bar1H + 'px');
-    root.style.setProperty('--bar2H', bar2H + 'px');
-    root.style.setProperty('--bar3H', bar3H + 'px');
 
     const total = navH + bar1H + bar2H + bar3H;
     root.style.setProperty('--headerTotal', total + 'px');
@@ -661,11 +661,9 @@ function setupStickyWatch(){
 
   ['show.bs.collapse','shown.bs.collapse','hide.bs.collapse','hidden.bs.collapse']
     .forEach(ev => document.addEventListener(ev, schedule));
-
   const badgeCollapseEl = document.getElementById('badgeCollapse');
-  if (badgeCollapseEl) {
-    badgeCollapseEl.addEventListener('transitionend', schedule, true);
-  }
+  if (badgeCollapseEl) badgeCollapseEl.addEventListener('transitionend', schedule, true);
 
   document.getElementById('kw')?.addEventListener('input', schedule);
 }
+</script>
