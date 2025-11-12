@@ -44,7 +44,6 @@
   { "id":"F_M_Gyoza","name":"冰花煎餃","category":"在地美食","tags":["煎","脆邊"],"address":"多店家","desc":"薄脆冰花邊，內餡多汁。","quests":["拍脆邊特寫","評 1 句口感"] },
   { "id":"F_M_Oyster","name":"石蚵","category":"在地美食","tags":["海味","季節"],"address":"多店家","desc":"潮間帶海味代表，鮮甜彈牙。","quests":["拍料理成品","寫最佳料理法"] },
   { "id":"F_M_SunNoodle","name":"日曬麵線","category":"在地美食","tags":["手作","日曬"],"address":"多店家","desc":"日曬工序帶出獨特勁道。","quests":["拍線架畫面","寫 20 字風味"] },
-  { "id":"F_M_Gaoliang","name":"高粱酒","category":"在地美食","tags":["烈酒","釀造"],"address":"多店家","desc":"在地釀造的經典烈酒。","quests":["負責任的飲用","表示3個能形容高粱酒香氣詞(例如：穀物、果乾、辛香)"] },
   { "id":"F_M_Taro","name":"芋頭","category":"在地美食","tags":["在地作物"],"address":"多店家","desc":"綿密香甜的在地作物。","quests":["拍剖面","寫最佳料理搭配"] },
   { "id":"F_M_SandWorm","name":"沙蟲","category":"在地美食","tags":["海味","限定"],"address":"多店家","desc":"獨特的潮間帶食材。","quests":["寫敢不敢嘗試的理由","評 1–5"] },
   { "id":"F_M_Foshou","name":"佛手貝","category":"在地美食","tags":["貝類"],"address":"多店家","desc":"少見的貝類食材，口感獨特。","quests":["拍料理","寫 20 字口感"] },
@@ -59,8 +58,8 @@
   
   { "id":"D_Bafenpu","name":"八分舖","category":"在地飲品","tags":["在地飲品"],"lat":24.438863259996463,"lng":118.31872745703723,"address":"八分鋪","desc":"在地常見飲品品牌。","quests":["拍杯身設計","寫 3 個風味詞"] },
   { "id":"D_Gaoming","name":"高明綠豆沙","category":"在地飲品","tags":["冰飲","豆沙"],"lat":24.442045793617677,"lng":118.41510468019536,"address":"高明照相館","desc":"綠豆沙香濃冰涼，沁心消暑。","quests":["拍杯身與綿密度","評分 1–5"] },
+  { "id":"F_M_Gaoliang","name":"高粱酒","category":"在地飲品","tags":["金門名產","釀造"],"address":"多店家","desc":"在地釀造的經典烈酒。","quests":["負責任的飲用","表示3個能形容高粱酒香氣詞(例如：穀物、果乾、辛香)"] },
   
-  { "id":"S_Gaoliang","name":"高粱酒","category":"金門名產","tags":["釀造","經典"],"address":"多店家","desc":"最具代表性的金門名產之一。","quests":["拍酒標","寫 3 個香氣詞"] },
   { "id":"S_Yitiaogen","name":"一條根","category":"金門名產","tags":["藥草","伴手"],"address":"多店家","desc":"在地藥草延伸的保健／伴手禮。","quests":["拍外盒","寫功用印象"] },
   { "id":"S_Knife","name":"砲彈菜刀","category":"金門名產","tags":["鋼材","工藝"],"address":"多店家","desc":"戰地記憶轉化的金屬工藝代表。","quests":["拍刀紋","寫 20 字心得"] },
   { "id":"S_GongTang","name":"貢糖","category":"金門名產","tags":["花生","點心"],"address":"多店家","desc":"香脆不黏牙，老少咸宜的伴手禮。","quests":["拍產品與包裝","寫 20 字口感"] },
