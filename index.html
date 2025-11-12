@@ -37,25 +37,26 @@
        --navH, --bar1H：提供 sticky top 初始值避免 FOUC
     */
     :root{
-      --headerTotal: 152px; /* 預設保守值，JS 載入後會覆寫 */
-      --vh: 100vh;          /* JS 會改成 window.innerHeight px */
-      --navH: 56px;         /* navbar 初始高度 */
-      --bar1H: 48px;        /* 進度列初始高度 */
+      --navH:56px;      /* JS 會量測覆寫 */
+      --bar1H:48px;     /* 進度列 */
+      --bar2H:0px;      /* 徽章收合區（展開時會變） */
+      --bar3H:48px;     /* 分類區 */
+      --stackH: calc(var(--bar2H) + var(--bar3H));
+      --headerTotal: calc(var(--navH) + var(--bar1H) + var(--stackH));
     }
-
+    
     html, body { height: 100%; }
-    /* 只讓主內容滾動，避免整頁跟著滾，保住 sticky 區 */
     body{ background:#f7f7f9; overflow:hidden; }
-
-    /* ----[主內容滾動區]----
-       以 innerHeight(-headerTotal) 當高度，避免「拉不到底」 */
+    
+    /* 讓內容區自行滾動（不影響上方固定區） */
     .main-scroll{
-      height: calc(var(--vh) - var(--headerTotal));
+      /* 使用 dvh 可避開行動瀏覽器位址列伸縮造成的 100vh 問題 */
+      height: calc(100dvh - var(--headerTotal));
       overflow:auto;
       -webkit-overflow-scrolling: touch;
       background:#f7f7f9;
     }
-
+    
     /* ----[地圖區]---- */
     #map{height:48vh; border-radius:8px; border:1px solid #dee2e6;}
     @media (min-width:1200px){ #map{height:56vh;} }
