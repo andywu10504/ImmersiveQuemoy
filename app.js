@@ -1,4 +1,3 @@
-<script>
 /* ===============================
    讀取目錄資料（從 catalog.json）
    =============================== */
@@ -666,4 +665,3 @@ function setupStickyWatch(){
 
   document.getElementById('kw')?.addEventListener('input', schedule);
 }
-</script>
