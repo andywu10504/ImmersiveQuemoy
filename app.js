@@ -16,7 +16,7 @@ const LS_ARR        = "kinmen_arrival_v1";
 const LS_BADGE_CAT  = "kinmen_badges_cat_v1";
 
 /* ===============================
-   全域徽章規則（僅最高顯示用）
+   全域徽章規則
    =============================== */
 const BADGE_RULES = [
   {count:1 , name:"入門",      icon:"fa-solid fa-flag"},
@@ -34,12 +34,12 @@ const CAT_BADGE_RULES = {
     { count: 4, name: "金門學家", icon: "fa-solid fa-chess-rook" }
   ],
   "戰地坑道": [
-    { count: 1, name: "坑道初探", icon: "fa-solid fa-person-digging" },   // 替代 fa-tunnel
-    { count: 2, name: "坑道通",   icon: "fa-solid fa-person-hiking" }     // 替代 fa-person-walking
+    { count: 1, name: "坑道初探", icon: "fa-solid fa-person-digging" },
+    { count: 2, name: "坑道通",   icon: "fa-solid fa-person-hiking" }
   ],
   "防禦工事": [
     { count: 2, name: "防禦入門", icon: "fa-solid fa-shield-halved" },
-    { count: 4, name: "防禦巡禮", icon: "fa-brands fa-fort-awesome" }     // Brands（Free）
+    { count: 4, name: "防禦巡禮", icon: "fa-brands fa-fort-awesome" }
   ],
   "營區": [
     { count: 1, name: "營區初探", icon: "fa-solid fa-tent" },
@@ -59,7 +59,7 @@ const CAT_BADGE_RULES = {
   ],
   "心戰設施": [
     { count: 1, name: "心戰印記", icon: "fa-solid fa-bullhorn" },
-    { count: 2, name: "心戰通",   icon: "fa-solid fa-tower-broadcast" }   // 保守改回廣播塔，避免 fa-radio 版本相容性
+    { count: 2, name: "心戰通",   icon: "fa-solid fa-radio" }
   ],
   "太武山": [
     { count: 1, name: "太武初遇", icon: "fa-solid fa-mountain" },
@@ -75,17 +75,17 @@ const CAT_BADGE_RULES = {
   ],
   "特約茶室": [
     { count: 1, name: "特約入門", icon: "fa-solid fa-martini-glass" },
-    { count: 2, name: "特約知行", icon: "fa-solid fa-landmark" }          // 保守替代 landmark-dome
+    { count: 2, name: "特約知行", icon: "fa-solid fa-landmark" }
   ],
   "戰時文化": [
     { count: 1, name: "戰時印記",  icon: "fa-solid fa-helmet-safety" },
-    { count: 2, name: "戰時通識",  icon: "fa-solid fa-shield" }           // 替代盾牌病毒
+    { count: 2, name: "戰時通識",  icon: "fa-solid fa-shield" }
   ],
   "地形樣態": [
     { count: 1, name: "潮汐行者", icon: "fa-solid fa-water" }
   ],
   "戰地史料": [
-    { count: 1, name: "戰史入門", icon: "fa-solid fa-landmark" },         // 替代 dome
+    { count: 1, name: "戰史入門", icon: "fa-solid fa-landmark" },
     { count: 2, name: "戰史達人", icon: "fa-solid fa-book" }
   ],
   "書院": [
@@ -93,7 +93,7 @@ const CAT_BADGE_RULES = {
     { count: 2, name: "書院通",   icon: "fa-solid fa-feather-pointed" }
   ],
   "沙灘": [
-    { count: 1, name: "海風初見",    icon: "fa-solid fa-umbrella" },      // 替代 umbrella-beach
+    { count: 1, name: "海風初見",    icon: "fa-solid fa-umbrella" },
     { count: 2, name: "海灘守護者", icon: "fa-solid fa-recycle" }
   ],
   "在地美食": [
@@ -132,7 +132,7 @@ let state = {
 };
 
 /* ===============================
-   徽章顯示佇列（避免多枚同時彈出）
+   徽章顯示佇列
    =============================== */
 const badgeQueue = [];
 let isBadgeShowing = false;
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     renderList();
     renderProgress();
-    renderBadgesCompact();   // ← 折疊區只顯示「旅人報到 + 最高級別」
+    renderBadgesCompact();
     wireEvents();
     tryAutoStampFromURL();
   } catch (err) {
@@ -427,7 +427,6 @@ function checkCatBadgeUnlock(cat, before, after){
 
 /* ===============================
    進度/徽章（精簡顯示列）
-   - 只顯示「旅人報到 + 全域最高一枚」
    =============================== */
 function renderProgress(){
   $("#progressText").text(`${state.collected.size} / ${DATA.length}`);
@@ -437,28 +436,31 @@ function updateProgressBar(){
   const pct = DATA.length? Math.round(state.collected.size*100/DATA.length): 0;
   $("#progressBar").css("width", pct+"%").text(pct+"%");
 }
+
 function renderBadgesCompact(){
   const $row = $("#badgesRow").empty();
   const total = state.collected.size;
+  const expanded = document.getElementById('badgeCollapse')?.classList.contains('show');
 
-  // 旅人報到（若已領）
+  // 旅人報到
   if(state.arrivalGranted){
     $row.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
   }
 
-  // 只找出最高級別那一枚
+  // 全域最高級別（若已蒐集到任何點）
   let best = null;
   for(const rule of BADGE_RULES.slice().sort((a,b)=>b.count-a.count)){
     if(total >= rule.count){ best = rule; break; }
   }
   if(best){
     $row.append(`<span class="badge-chip badge-strong"><i class="${best.icon}"></i> ${best.name}</span>`);
-  }else{
+  }else if(!expanded){
+    // 尚未解任何全域徽章：收合狀態才提示下一級（展開時不顯示提示）
     const next = BADGE_RULES[0];
     $row.append(`<span class="badge-chip badge-muted"><i class="${next.icon}"></i> 再蒐集 ${next.count - total} 個解鎖「${next.name}」</span>`);
   }
 
-  // 類別進度（仍可輔助提示）
+  // 每一類別進度
   const cats = Array.from(new Set(DATA.map(d=>d.category))).sort();
   cats.forEach(cat=>{
     const got = countCollectedByCategory(cat);
@@ -490,7 +492,7 @@ function wireEvents(){
     state.unlockedCatBadges = {};
     saveCollected(); saveBadgeState(); saveCatBadgeState();
 
-    state.arrivalGranted = false; 
+    state.arrivalGranted = false;
     saveArrival(false);
     ensureArrivalBadge();
 
@@ -502,10 +504,13 @@ function wireEvents(){
   $("#list").on("click",".btn-collect", function(){ const id=$(this).data("id"); toggleCollect(id); renderList(); renderBadgesCompact(); });
   $("#list").on("click",".btn-locate", function(){ const it=ITEM_BY_ID[$(this).data("id")]; if(it){ flyToItem(it); openItem(it.id); } });
 
-  $("#btnAllBadges").on("click", ()=>{ renderAllBadges(); bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show(); });
+  $("#btnAllBadges").on("click", ()=>{
+    renderAllBadges();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('allBadgesModal')).show();
+  });
 
-  setupBadgeToggleButton();  // 收合/展開按鈕狀態同步
-  setupStickyWatch();        // sticky 高度校正
+  setupBadgeToggleButton();
+  setupStickyWatch();
 }
 
 /* ===============================
@@ -516,8 +521,15 @@ function setupBadgeToggleButton(){
   const el  = document.getElementById("badgeCollapse");
 
   setBadgeToggleUI(el.classList.contains('show'));
-  el.addEventListener("shown.bs.collapse", ()=> setBadgeToggleUI(true));
-  el.addEventListener("hidden.bs.collapse", ()=> setBadgeToggleUI(false));
+
+  el.addEventListener("shown.bs.collapse", ()=>{
+    setBadgeToggleUI(true);
+    renderBadgesCompact(); // 展開時重新渲染（隱藏灰色提示）
+  });
+  el.addEventListener("hidden.bs.collapse", ()=>{
+    setBadgeToggleUI(false);
+    renderBadgesCompact(); // 收合時重新渲染（顯示灰色提示）
+  });
 
   function setBadgeToggleUI(expanded){
     if(expanded){
@@ -532,14 +544,16 @@ function setupBadgeToggleButton(){
 
 /* ===============================
    全部徽章 Modal 內容
-   - 全域清單最前面加「旅人報到」
    =============================== */
 function renderAllBadges(){
   const $g = $("#allBadgeGlobal").empty();
 
-  // 旅人報到（列在全域清單最前面）
-  const arrivalUnlocked = !!state.arrivalGranted;
-  $g.append(`<span class="badge-chip ${arrivalUnlocked?'badge-strong':''}"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
+  // 旅人報到也列入全域清單
+  if(state.arrivalGranted){
+    $g.append(`<span class="badge-chip badge-strong"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
+  }else{
+    $g.append(`<span class="badge-chip"><i class="fa-solid fa-plane-arrival"></i> 旅人報到</span>`);
+  }
 
   BADGE_RULES.forEach(r=>{
     const unlocked = state.collected.size >= r.count;
@@ -607,7 +621,7 @@ function countCollectedByCategory(cat){
 }
 
 /* ===============================
-   Sticky 高度校正（核心修正）
+   Sticky 高度校正
    =============================== */
 function setupStickyWatch(){
   const root = document.documentElement;
@@ -629,6 +643,8 @@ function setupStickyWatch(){
 
     root.style.setProperty('--navH',  navH  + 'px');
     root.style.setProperty('--bar1H', bar1H + 'px');
+    root.style.setProperty('--bar2H', bar2H + 'px');
+    root.style.setProperty('--bar3H', bar3H + 'px');
 
     const total = navH + bar1H + bar2H + bar3H;
     root.style.setProperty('--headerTotal', total + 'px');
@@ -645,9 +661,11 @@ function setupStickyWatch(){
 
   ['show.bs.collapse','shown.bs.collapse','hide.bs.collapse','hidden.bs.collapse']
     .forEach(ev => document.addEventListener(ev, schedule));
+
   const badgeCollapseEl = document.getElementById('badgeCollapse');
   if (badgeCollapseEl) {
     badgeCollapseEl.addEventListener('transitionend', schedule, true);
   }
+
   document.getElementById('kw')?.addEventListener('input', schedule);
 }
