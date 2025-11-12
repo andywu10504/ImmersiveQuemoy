@@ -30,8 +30,8 @@ const BADGE_RULES = [
    =============================== */
 const CAT_BADGE_RULES = {
   "在地文化": [
-    { count: 2, name: "在地文化入門", icon: "fa-solid fa-book-open" },
-    { count: 4, name: "在地文化巡禮", icon: "fa-solid fa-chess-rook" }
+    { count: 2, name: "金門入門", icon: "fa-solid fa-book-open" },
+    { count: 4, name: "金門學家", icon: "fa-solid fa-chess-rook" }
   ],
   "戰地坑道": [
     { count: 1, name: "坑道初探", icon: "fa-solid fa-person-digging" },      // 替代 fa-tunnel
