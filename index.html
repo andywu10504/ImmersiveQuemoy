@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>金門回聲｜沉浸・集章・巡禮</title>
 
-  <!-- ============ 基礎樣式、字型與地圖 ============ -->
-  <!-- Bootstrap 5.3.8 + Font Awesome 7 -->
+  <!-- 基礎樣式 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
 
@@ -18,49 +17,37 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- ============ PWA / Icons ============ -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ffffff">
-  <!-- Favicon（桌面/桌機瀏覽器 .ico）-->
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <!-- 也提供 PNG 版本（新瀏覽器）-->
-  <link rel="icon" type="image/png" href="icon-192.png" sizes="192x192">
-  <!-- iOS / iPadOS -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <!-- A2HS -->
   <meta name="mobile-web-app-capable" content="yes">
-  <!-- iOS fullscreen / 樣式 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="金門回聲">
 
-  <!-- ============ 版面與滾動修正（含 iOS 高度修正） ============ -->
+  <!-- Favicon / Icons（確保檔案存在，路徑正確） -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+
+  <!-- 版面與滾動修正 -->
   <style>
     :root{
-      --navH:56px;      /* JS 會量測覆寫 */
-      --bar1H:48px;     /* 進度列 */
-      --bar2H:0px;      /* 徽章收合區（展開時會變） */
-      --bar3H:48px;     /* 分類區 */
+      --navH:56px; --bar1H:48px; --bar2H:0px; --bar3H:48px;
       --stackH: calc(var(--bar2H) + var(--bar3H));
       --headerTotal: calc(var(--navH) + var(--bar1H) + var(--stackH));
     }
     html, body { height: 100%; }
     body{ background:#f7f7f9; overflow:hidden; }
-
-    .main-scroll{
-      height: calc(100dvh - var(--headerTotal));
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-      background:#f7f7f9;
-    }
+    .main-scroll{ height: calc(100dvh - var(--headerTotal)); overflow:auto; -webkit-overflow-scrolling: touch; background:#f7f7f9; }
     #map{height:48vh; border-radius:8px; border:1px solid #dee2e6;}
     @media (min-width:1200px){ #map{height:56vh;} }
-
     .tag{display:inline-block;padding:.2rem .5rem;border:1px solid #adb5bd;border-radius:999px;font-size:.8rem;margin-right:.25rem;color:#495057;background:#fff;}
     .filter-pill{cursor:pointer}
     .filter-pill.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
     .list-empty{padding:3rem 1rem;color:#868e96;text-align:center}
-
     .card.collected{border-color:#20c997;box-shadow:0 0 0 .2rem rgba(32,201,151,.15);}
     .stamp{
       position:absolute;right:.5rem;bottom:.5rem;width:78px;height:78px;border:4px solid #d6336c;color:#d6336c;border-radius:50%;
@@ -70,46 +57,24 @@
     .card.collected .stamp{transform: rotate(-12deg) scale(1);opacity:.92;transition: transform .25s ease, opacity .25s ease;}
     @keyframes stampIn {0%{transform: rotate(-12deg) scale(.1);opacity:.0;}60%{transform: rotate(-12deg) scale(1.15);opacity:1;}100%{transform: rotate(-12deg) scale(1);opacity:.92;}}
     .stamp.punch{animation: stampIn .38s cubic-bezier(.2,1,.2,1);}
-
     .badge-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:999px;font-weight:600;border:1px solid #dee2e6;background:#fff;color:#495057;}
     .badge-strong{background:#198754;color:#fff;border-color:#198754;}
     .badge-muted{background:#f1f3f5;color:#6c757d;}
     .pop-zoom{animation:pop .4s ease;}
     @keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:scale(1);opacity:1}}
-
     .navbar.sticky-top { position: sticky; top: 0; z-index: 1030; }
-
-    .subbar-1{
-      position: sticky;
-      top: var(--navH);
-      z-index: 1020;
-      background:#fff;
-      border-bottom:1px solid #e9ecef;
-    }
-
-    .sticky-stack{
-      position: sticky;
-      top: calc(var(--navH) + var(--bar1H));
-      z-index: 1015;
-      background:#fff;
-      border-bottom:1px solid #e9ecef;
-      overflow:hidden;
-    }
-
+    .subbar-1{ position: sticky; top: var(--navH); z-index: 1020; background:#fff; border-bottom:1px solid #e9ecef; }
+    .sticky-stack{ position: sticky; top: calc(var(--navH) + var(--bar1H)); z-index: 1015; background:#fff; border-bottom:1px solid #e9ecef; overflow:hidden; }
     #badgeCollapse .container{ padding-top:.5rem; padding-bottom:.5rem; }
-
     .ios-tip .ios-icons{font-size:1.2rem}
   </style>
 </head>
 <body>
 
-  <!-- ============ Navbar ============ -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top" id="topNav">
     <div class="container-fluid px-3">
-      <a class="navbar-brand fw-bold" href="#">
-        <i class="fa-solid fa-feather-pointed me-2"></i>金門回聲｜沉浸・集章・巡禮
-      </a>
-
+      <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-feather-pointed me-2"></i>金門回聲｜沉浸・集章・巡禮</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="切換導覽">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -130,28 +95,15 @@
     </div>
   </nav>
 
-  <!-- ============ 進度列（Sticky 第一層） ============ -->
+  <!-- 進度列 -->
   <div class="py-2 bg-light border-bottom subbar-1">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between mb-1">
         <div class="small text-muted">進度：<span id="progressText">0 / 0</span></div>
         <div class="d-flex align-items-center gap-2">
-          <button id="btnAllBadges" class="btn btn-sm btn-outline-primary">
-            <i class="fa-solid fa-award me-1"></i>查看全部徽章
-          </button>
-
-          <!-- A2HS：可安裝才會顯示 -->
-          <button id="btnA2HS" class="btn btn-sm btn-success d-none">
-            <i class="fa-solid fa-plus"></i> 新增到主畫面
-          </button>
-
-          <!-- 直接綁 Bootstrap Collapse -->
-          <button id="btnToggleBadges"
-                  class="btn btn-sm btn-outline-secondary"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#badgeCollapse"
-                  aria-controls="badgeCollapse"
-                  aria-expanded="false">
+          <button id="btnAllBadges" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-award me-1"></i>查看全部徽章</button>
+          <button id="btnA2HS" class="btn btn-sm btn-success d-none"><i class="fa-solid fa-plus"></i> 新增到主畫面</button>
+          <button id="btnToggleBadges" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#badgeCollapse" aria-controls="badgeCollapse" aria-expanded="false">
             <i class="fa-solid fa-chevron-down me-1"></i> 展開徽章
           </button>
         </div>
@@ -162,21 +114,19 @@
     </div>
   </div>
 
-  <!-- ============ 徽章 + 分類（Sticky 第二層） ============ -->
+  <!-- 徽章 + 分類 -->
   <div class="sticky-stack" id="stickyStack">
     <div id="badgeCollapse" class="collapse">
       <div class="container py-2">
         <div id="badgesRow" class="d-flex flex-wrap align-items-center gap-2"></div>
       </div>
     </div>
-
-    <!-- 類別篩選列 -->
     <div class="container py-2 subbar-3">
       <div id="catFilters" class="d-flex flex-wrap gap-2"></div>
     </div>
   </div>
 
-  <!-- ============ 主內容 ============ -->
+  <!-- 主內容 -->
   <div class="main-scroll">
     <div class="container my-3">
       <div id="map" class="mb-3"></div>
@@ -188,7 +138,7 @@
     </div>
   </div>
 
-  <!-- ============ 詳情 Modal ============ -->
+  <!-- 詳情 Modal -->
   <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
       <div class="modal-content">
@@ -229,7 +179,7 @@
     </div>
   </div>
 
-  <!-- ============ 解鎖徽章 Modal ============ -->
+  <!-- 解鎖徽章 Modal -->
   <div class="modal fade" id="badgeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4 pop-zoom">
@@ -241,7 +191,7 @@
     </div>
   </div>
 
-  <!-- ============ 全部徽章 Modal ============ -->
+  <!-- 全部徽章 Modal -->
   <div class="modal fade" id="allBadgesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -259,7 +209,7 @@
     </div>
   </div>
 
-  <!-- ============ A2HS：iOS 指南 Modal ============ -->
+  <!-- iOS A2HS 指南 -->
   <div class="modal fade ios-tip" id="iosTip" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -278,10 +228,10 @@
     </div>
   </div>
 
-  <!-- ============ App JS ============ -->
-  <script src="app.js"></script>
-
-  <!-- ============ 輕量 A2HS 控制（同顆按鈕支援 Android 與 iOS） ============ -->
+  <!-- App JS（上面給的完整 app.js 內容） -->
+  <!-- 建議把上面的 <script> 區塊獨立存為 app.js，這裡改為 <script src="app.js"></script> 也可 -->
+  
+  <!-- 輕量 A2HS 控制 -->
   <script>
   (function(){
     let deferredPrompt = null;
@@ -290,7 +240,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      btn.classList.remove('d-none');  // Android 可安裝時才會顯示
+      btn.classList.remove('d-none');
     });
 
     btn.addEventListener('click', async () => {
